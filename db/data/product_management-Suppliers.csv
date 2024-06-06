@@ -1,4 +1,4 @@
-ID;name;street;city;state;zipCode;country;
+ID;Name;Street;City;State;ZipCode;Country;
 1;Greenfield Suppliers;123 Main Street;Los Angeles;California;73235;USA;
 2;Summit Sourcing;456 Elm Street;Toronto;Ontario;63567;Canada;
 3;Pacific Importers;789 Maple Avenue;London;England;86422;United Kingdom;

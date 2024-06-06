@@ -1,0 +1,33 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <ViewSettingsDialog
+        id="idSortDialog"
+        confirm="onSortDialogConfirm"
+        reset="onSortDialogReset"
+    >
+        <sortItems>
+            <ViewSettingsItem
+                text="{i18n>Name}"
+                key="Name"
+            />
+            <ViewSettingsItem
+                text="{i18n>Price}"
+                key="Price"
+            />
+            <ViewSettingsItem
+                text="{i18n>Description}"
+                key="Description"
+            />
+            <ViewSettingsItem
+                text="{i18n>ReleaseDate}"
+                key="ReleaseDate"
+            />
+            <ViewSettingsItem
+                text="{i18n>Rating}"
+                key="Rating"
+            />
+        </sortItems>
+    </ViewSettingsDialog>
+</core:FragmentDefinition>

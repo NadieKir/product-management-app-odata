@@ -1,0 +1,267 @@
+<mvc:View
+    controllerName="productmanagement.products.controller.ProductsOverviewPage"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:core="sap.ui.core"
+    height="100%"
+>
+    <f:DynamicPage
+        id="idPage"
+        preserveHeaderStateOnScroll="true"
+        fitContent="true"
+    >
+        <f:title>
+            <f:DynamicPageTitle id="idPageTitleContent">
+                <f:heading>
+                    <Title id="idPageTitle" text="{i18n>ProductsOverviewTitle}"/>
+                </f:heading>
+            </f:DynamicPageTitle>
+        </f:title>
+
+        <f:header>
+            <f:DynamicPageHeader id="idPageHeader">
+                <f:content>
+                    <fb:FilterBar
+                        id="idProductsFilterBar"
+                        useToolbar="false"
+                        showRestoreOnFB="true"
+                        showFilterConfiguration="false"
+                        search="onFilterBarSearch"
+                        reset="onFilterBarReset"
+                    >
+                        <fb:filterGroupItems>
+                            <fb:FilterGroupItem
+                                id="idNameFilterGroup"
+                                name="Name"
+                                label="{i18n>Name}"
+                                groupName="productFiltersGroup"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <Input
+                                        id="idNameFilterGroupField"
+                                        name="Name"
+                                        placeholder="{i18n>ProductNamePlaceholder}"
+                                        showClearIcon="true"
+                                    />
+                                </fb:control>
+                            </fb:FilterGroupItem>
+
+                            <fb:FilterGroupItem
+                                id="idCategoriesFilterGroup"
+                                name="Categories"
+                                label="{i18n>Categories}"
+                                groupName="productFiltersGroup"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <MultiComboBox
+                                        id="idCategoriesFilterGroupField"
+                                        name="Categories"
+                                        placeholder="{i18n>CategoryPlaceholder}"
+                                        items="{
+                                            path: '/Categories',
+                                            sorter: { path: 'Name' }
+                                        }"
+                                    >
+                                        <core:Item
+                                            id="idCategoriesFilterGroupFieldItem"
+                                            key="{ID}"
+                                            text="{Name}"
+                                        />
+                                    </MultiComboBox>
+                                </fb:control>
+                            </fb:FilterGroupItem>
+
+                            <fb:FilterGroupItem
+                                id="idSuppliersFilterGroup"
+                                name="Suppliers"
+                                label="{i18n>Suppliers}"
+                                groupName="productFiltersGroup"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <MultiInput
+                                        id="idSuppliersFilterGroupField"
+                                        name="Suppliers"
+                                        placeholder="{i18n>SuppliersPlaceholder}"
+                                        showClearIcon="true"
+                                        showSuggestion="true"
+                                        showValueHelp="false"
+                                        suggestionItems="{/Suppliers}"
+                                    >
+                                        <suggestionItems>
+                                            <core:Item
+                                                id="idSuppliersFilterGroupFieldItem"
+                                                key="{ID}"
+                                                text="{Name}"
+                                            />
+                                        </suggestionItems>
+                                    </MultiInput>
+                                </fb:control>
+                            </fb:FilterGroupItem>
+
+                            <fb:FilterGroupItem
+                                id="idReleaseDateFilterGroup"
+                                name="ReleaseDate"
+                                label="{i18n>ReleaseDate}"
+                                groupName="productFiltersGroup"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <DateRangeSelection
+                                        id="idReleaseDateFilterGroupField"                    
+                                        name="ReleaseDate"
+                                        placeholder="{i18n>ReleaseDatePlaceholder}"
+                                        maxDate="{productsOverviewView>/MaxReleaseDate}"
+                                    />
+                                </fb:control>
+                            </fb:FilterGroupItem>
+                        </fb:filterGroupItems>
+                    </fb:FilterBar>
+                </f:content>
+            </f:DynamicPageHeader>
+        </f:header>
+
+        <f:content>
+            <Table
+                id="idProductsTable"
+                items="{/Products}"
+                mode="MultiSelect"
+                multiSelectMode="ClearAll"
+                autoPopinMode="true"
+                sticky="ColumnHeaders"
+                noDataText="{i18n>ProductsNotFound}"
+                selectionChange="onTableSelectionChange"
+            >
+                <headerToolbar>
+                    <OverflowToolbar id="idProductsTableToolbar">
+                        <Title
+                            id="idProductsTableTitle"
+                            text="{i18n>Products}"
+                            level="H2"
+                        />
+                        <ToolbarSpacer id="idProductsTableToolbarSpacer"/>
+                        <Button
+                            id="idCreateProductButton"
+                            text="{i18n>Create}"
+                            type="Emphasized"
+                            icon="sap-icon://add"
+                            press="onCreateProductButtonPress"
+                        />
+                        <Button
+                            id="idDeleteProductsButton"
+                            text="{i18n>Delete} {
+                                path: 'productsOverviewView>/SelectedProducts',
+                                formatter: '.formatter.deleteProductsButtonTextFormatter'
+                            }"
+                            icon="sap-icon://delete"
+                            type="Transparent"
+                            enabled="{= !!${productsOverviewView>/SelectedProducts}.length}"
+                            press="onDeleteProductButtonPress"
+                            ariaHasPopup="Dialog"
+                        />
+                        <ToolbarSeparator id="idProductsTableToolbarSeparator"/>
+                        <Button
+                            id="idProductsTableSortButton"
+                            tooltip="Sort"
+                            icon="sap-icon://sort"
+                            press="onSortButtonPressed"
+                            type="{
+                                path: 'productsOverviewView>/sorter',
+                                formatter: '.formatter.sortButtonStyleFormatter'
+                            }"
+                        />
+                        <Button
+                            id="idProductsTableGroupButton"
+                            tooltip="Group"
+                            icon="sap-icon://group-2"
+                            press="onGroupButtonPressed"
+                            type="{= ${productsOverviewView>/grouping} ? 'Neutral' : 'Default'}"
+                        />
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column id="idProductsTableNameColumn" importance="High" >
+                        <Text id="idProductsTableNameColumnText" text="{i18n>Name}"  />
+                    </Column>
+
+                    <Column
+                        id="idProductsTablePriceColumn"
+                        importance="High"
+                        hAlign="End"
+                        width="7rem"
+                    >
+                        <Text id="idProductsTablePriceColumnText" text="{i18n>Price}" />
+                    </Column>
+
+                    <Column
+                        id="idProductsTableDescriptionColumn"
+                        importance="Low"
+                        autoPopinWidth="20"
+                    >
+                        <Text id="idProductsTableDescriptionColumnText" text="{i18n>Description}" />
+                    </Column>
+
+                    <Column
+                        id="idProductsTableReleaseDateColumn"
+                        importance="Medium"
+                        autoPopinWidth="10"
+                        width="8rem"
+                    >
+                        <Text id="idProductsTableReleaseDateColumnText" text="{i18n>ReleaseDate}" />
+                    </Column>
+
+                    <Column
+                        id="idProductsTableRatingColumn"
+                        importance="Medium"
+                        autoPopinWidth="10"
+                        width="7rem"
+                    >
+                        <Text id="idProductsTableRatingColumnText" text="{i18n>Rating}" />
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem
+                        id="idProductsTableItem"
+                        type="Navigation"
+                        press="onColumnListItemPress"
+                        highlight="{= ${products>DiscountDate} ? 'Success' : 'None'}"
+                    >
+                        <ObjectIdentifier id="idProductsTableItemName" title="{Name}" />
+                        <ObjectNumber  id="idProductsTableItemPrice"
+                            state="{= ${products>DiscountDate} ? 'Success' : 'None'}"
+                            number="{
+                                parts: ['Price'],
+                                type: 'sap.ui.model.type.Currency',
+                                formatOptions: {currencyCode : false, groupingSeparator: ' ', decimals: 0 }
+                            }"
+                            unit="USD"
+                        />
+                        <Text
+                            id="idProductsTableItemDescription"
+                            text="{Description}"
+                            wrapping="false"
+                        />
+                        <Text
+                            id="idProductsTableItemReleaseDate"
+                            text="{
+                                path: 'ReleaseDate',
+                                formatter: '.formatter.jsonDateStringFormatter'
+                            }"
+                            wrapping="false"
+                        />
+                        <RatingIndicator
+                            id="idProductsTableItemRatingIndicator"
+                            value="{Rating}"
+                            iconSize="15px"
+                            editable="false"
+                        />
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </f:content>
+    </f:DynamicPage> 
+</mvc:View>

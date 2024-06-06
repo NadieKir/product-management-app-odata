@@ -1,4 +1,4 @@
-ID;name;description;rating;releaseDate;discountDate;price;image;
+ID;Name;Description;Rating;ReleaseDate;DiscountDate;Price;Image;
 1;Smartwatch Series X;Advanced smartwatch with fitness tracking and GPS;4;/Date(1707955200000)/;/Date(1709251200000)/;129.99;https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0xVpjg0k34s8NqUCGZstdsTPdJb8Qh1XQRAv9jZawRg&s;
 2;Wireless Noise-Canceling Headphones;Immersive sound experience with active noise cancellation;5;/Date(1708387200000)/;;199.99;https://d1b5h9psu9yexj.cloudfront.net/57440/Anker-s-Soundcore-Space-One_20230829-151132_full.jpeg;4,14;2,3;3,4;
 3;Iphone 15 Pro;Professional-grade phone for stunning photography;3;/Date(1709856000000)/;;799.99;https://www.bell.ca/Styles/images/iPhone_15_Pro_Blue_Titanium_lrg2.png;1,5;3;5,6;

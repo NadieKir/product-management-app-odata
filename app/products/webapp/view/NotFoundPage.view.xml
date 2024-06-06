@@ -1,0 +1,18 @@
+<mvc:View
+    controllerName="productmanagement.products.controller.NotFoundPage"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+>
+    <MessagePage
+        title="{i18n>NotFoundPageTitle}"
+        text="{i18n>NotFoundPageText}"
+        icon="{sap-icon://document}"
+    >
+        <customDescription>
+            <Link
+                text="{i18n>NotFoundPageActionText}"
+                press="onNavToProductsOverviewPage"
+            />
+        </customDescription>
+    </MessagePage>
+</mvc:View>
