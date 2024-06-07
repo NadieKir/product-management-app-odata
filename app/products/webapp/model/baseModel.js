@@ -35,7 +35,7 @@ sap.ui.define([], function () {
      * @returns {(Object | undefined)} - Model entry with given id.
      */
     getById: function (sId) {
-      return this.getData().find((oItem) => oItem.Id === sId);
+      return this.getData().find((oItem) => oItem.ID === sId);
     },
 
     /**

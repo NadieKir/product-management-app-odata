@@ -12,9 +12,6 @@ sap.ui.define(
     "productmanagement/products/model/formatter/formatter",
     "productmanagement/products/constant/constant",
     "productmanagement/products/helper/helper",
-    "productmanagement/products/model/productModel",
-    "productmanagement/products/model/categoryModel",
-    "productmanagement/products/model/supplierModel",
   ],
   function (
     BaseController,
@@ -28,10 +25,7 @@ sap.ui.define(
     MessageToast,
     formatter,
     constant,
-    helper,
-    productModel,
-    categoryModel,
-    supplierModel
+    helper
   ) {
     "use strict";
 
@@ -55,9 +49,6 @@ sap.ui.define(
         });
 
         oView.setModel(oProductsOverviewViewModel, "productsOverviewView");
-        oView.setModel(productModel.getModel(), "products");
-        oView.setModel(categoryModel.getModel(), "categories");
-        oView.setModel(supplierModel.getModel(), "suppliers");
 
         this.oViewModel = oView.getModel("productsOverviewView");
       },
@@ -75,9 +66,7 @@ sap.ui.define(
       onTableSelectionChange: function () {
         const aSelectedItems = this.byId("idProductsTable").getSelectedItems();
 
-        const aSelectedItemsData = aSelectedItems.map((oItem) =>
-          oItem.getBindingContext().getObject()
-        );
+        const aSelectedItemsData = aSelectedItems.map((oItem) => oItem.getBindingContext().getObject());
 
         this.oViewModel.setProperty("/SelectedProducts", aSelectedItemsData);
       },
@@ -110,8 +99,7 @@ sap.ui.define(
        */
       onDeleteProductButtonPress: function () {
         const aProductsToDelete = this.oViewModel.getProperty("/SelectedProducts");
-        const aProductsToDeleteIds = aProductsToDelete.map((oProduct) => oProduct.Id);
-
+        const aProductsToDeleteIds = aProductsToDelete.map((oProduct) => oProduct.ID);
         const sProductsToDeleteInfo =
           aProductsToDelete.length === 1
             ? aProductsToDelete[0].Name
@@ -133,25 +121,14 @@ sap.ui.define(
        */
       onDeleteProductConfirmationClose: function (sAction, aProductsToDeleteIds, sProductsToDeleteInfo) {
         if (sAction === MessageBox.Action.OK) {
-          const oODataModel = this.getView().getModel();
-          const aKeys = aProductsToDeleteIds.map(sId => "/Products('" + sId + "')");
+          const sMessageToastText = this.getLocalizedString(
+            aProductsToDeleteIds.length === 1 ? "DeleteConfirmedText.Singular" : "DeleteConfirmedText.Plural",
+            sProductsToDeleteInfo
+          );
 
-          aKeys.forEach(sKey =>  oODataModel.remove(sKey, {
-            success: () => {
-              const sMessageToastText = this.getLocalizedString(
-                aProductsToDeleteIds.length === 1 ? "DeleteConfirmedText.Singular" : "DeleteConfirmedText.Plural",
-                sProductsToDeleteInfo
-              );
+          console.log("delete product");
 
-              MessageToast.show(sMessageToastText);
-
-              this.oViewModel.setProperty("/SelectedProducts", []);
-              this.updateProductsTableSelections();
-            },
-            error: () => {
-              MessageBox.error(this.i18n("DeleteProductError"));
-            },
-          }))
+          MessageToast.show(sMessageToastText);
         }
       },
 
@@ -243,7 +220,7 @@ sap.ui.define(
                   path: sFilterName,
                   test: (aValue) =>
                     areIntersecting(
-                      aValue.map((oItem) => oItem.Id),
+                      aValue.map((oItem) => oItem.ID),
                       uFilterFieldValue
                     ),
                 })
@@ -320,7 +297,6 @@ sap.ui.define(
         oTableBinding.sort([oGrouping || {}, oSorter]);
 
         this.oViewModel.setProperty("/sorter", oSorter);
-        // oTableBinding.refresh();
       },
 
       /**
@@ -337,26 +313,12 @@ sap.ui.define(
           const oProductToMarkSelected = aProductsTableItems.find((oProduct) => {
             const oProductData = oProduct.getBindingContext().getObject();
 
-            return oProductData.Id === oSelectedProduct.Id;
+            return oProductData.ID === oSelectedProduct.ID;
           });
 
           oProductsTable.setSelectedItem(oProductToMarkSelected);
         });
       },
-
-      /**
-       * Delete products.
-       *
-       * @param {string[]} aProductsToDeleteIds - Products to delete ids.
-       */
-      // deleteProducts: function (aProductsToDeleteIds) {
-      //   productModel.delete(aProductsToDeleteIds);
-
-      //   // this.getView().setModel(productModel.getModel(), "products");
-      //   this.oViewModel.setProperty("/SelectedProducts", []);
-
-      //   this.updateProductsTableSelections();
-      // },
     });
   }
 );

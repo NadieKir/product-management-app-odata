@@ -30,7 +30,7 @@ sap.ui.define(
         const aProducts = this.getData();
 
         aPayload.forEach((oNewProductData) => {
-          oNewProductData.Id = helper.getTimestampString();
+          oNewProductData.ID = helper.getTimestampString();
 
           aProducts.push(oNewProductData);
         });
@@ -48,7 +48,7 @@ sap.ui.define(
        */
       update: function (sId, oData) {
         const aProducts = this.getData();
-        const nProductIndex = aProducts.findIndex((oProduct) => oProduct.Id === sId);
+        const nProductIndex = aProducts.findIndex((oProduct) => oProduct.ID === sId);
         const oProduct = aProducts[nProductIndex];
 
         for (let sProperty in oData) {
@@ -66,26 +66,9 @@ sap.ui.define(
        * @param {string[]} aIds - Products to delete ids.
        */
       delete: function (aIds) {
-        const oODataModel = this.getView().getModel();
-        // const oCtx = oEvent.getSource().getBindingContext();
+        const aRemainingProductsData = this.getData().filter((oProduct) => !aIds.includes(oProduct.Id));
 
-        // const sKey = oODataModel.createKey("/Products", oCtx.getObject());
-
-        const aKeys = aIds.map(sId => "/Products('" + sId + "')");
-
-        aKeys.forEach(sKey =>  oODataModel.remove(sKey, {
-          success: () => {
-            MessageToast.show(this.i18n("DeleteProductSuccess"));
-          },
-          error: () => {
-            MessageBox.error(this.i18n("DeleteProductError"));
-          },
-        }))
-
-       
-        // const aRemainingProductsData = this.getData().filter((oProduct) => !aIds.includes(oProduct.Id));
-
-        // this.setData(aRemainingProductsData);
+        this.setData(aRemainingProductsData);
       },
     };
   }

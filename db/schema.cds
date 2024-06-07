@@ -37,7 +37,7 @@ entity ProductsSuppliers : cuid {
         Supplier : Association to Suppliers;
 }
 
-entity Products : cuid {
+entity Products : cuid  {
         Name         : String;
         Description  : String;
         Rating       : Integer;

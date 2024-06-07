@@ -15,7 +15,10 @@
         <f:title>
             <f:DynamicPageTitle id="idPageTitleContent">
                 <f:heading>
-                    <Title id="idPageTitle" text="{i18n>ProductsOverviewTitle}"/>
+                    <Title
+                        id="idPageTitle"
+                        text="{i18n>ProductsOverviewTitle}"
+                    />
                 </f:heading>
             </f:DynamicPageTitle>
         </f:title>
@@ -112,7 +115,7 @@
                             >
                                 <fb:control>
                                     <DateRangeSelection
-                                        id="idReleaseDateFilterGroupField"                    
+                                        id="idReleaseDateFilterGroupField"
                                         name="ReleaseDate"
                                         placeholder="{i18n>ReleaseDatePlaceholder}"
                                         maxDate="{productsOverviewView>/MaxReleaseDate}"
@@ -143,7 +146,7 @@
                             text="{i18n>Products}"
                             level="H2"
                         />
-                        <ToolbarSpacer id="idProductsTableToolbarSpacer"/>
+                        <ToolbarSpacer id="idProductsTableToolbarSpacer" />
                         <Button
                             id="idCreateProductButton"
                             text="{i18n>Create}"
@@ -163,7 +166,9 @@
                             press="onDeleteProductButtonPress"
                             ariaHasPopup="Dialog"
                         />
-                        <ToolbarSeparator id="idProductsTableToolbarSeparator"/>
+                        <ToolbarSeparator
+                            id="idProductsTableToolbarSeparator"
+                        />
                         <Button
                             id="idProductsTableSortButton"
                             tooltip="Sort"
@@ -184,8 +189,14 @@
                     </OverflowToolbar>
                 </headerToolbar>
                 <columns>
-                    <Column id="idProductsTableNameColumn" importance="High" >
-                        <Text id="idProductsTableNameColumnText" text="{i18n>Name}"  />
+                    <Column
+                        id="idProductsTableNameColumn"
+                        importance="High"
+                    >
+                        <Text
+                            id="idProductsTableNameColumnText"
+                            text="{i18n>Name}"
+                        />
                     </Column>
 
                     <Column
@@ -194,7 +205,10 @@
                         hAlign="End"
                         width="7rem"
                     >
-                        <Text id="idProductsTablePriceColumnText" text="{i18n>Price}" />
+                        <Text
+                            id="idProductsTablePriceColumnText"
+                            text="{i18n>Price}"
+                        />
                     </Column>
 
                     <Column
@@ -202,7 +216,10 @@
                         importance="Low"
                         autoPopinWidth="20"
                     >
-                        <Text id="idProductsTableDescriptionColumnText" text="{i18n>Description}" />
+                        <Text
+                            id="idProductsTableDescriptionColumnText"
+                            text="{i18n>Description}"
+                        />
                     </Column>
 
                     <Column
@@ -211,7 +228,10 @@
                         autoPopinWidth="10"
                         width="8rem"
                     >
-                        <Text id="idProductsTableReleaseDateColumnText" text="{i18n>ReleaseDate}" />
+                        <Text
+                            id="idProductsTableReleaseDateColumnText"
+                            text="{i18n>ReleaseDate}"
+                        />
                     </Column>
 
                     <Column
@@ -220,7 +240,10 @@
                         autoPopinWidth="10"
                         width="7rem"
                     >
-                        <Text id="idProductsTableRatingColumnText" text="{i18n>Rating}" />
+                        <Text
+                            id="idProductsTableRatingColumnText"
+                            text="{i18n>Rating}"
+                        />
                     </Column>
                 </columns>
                 <items>
@@ -228,11 +251,15 @@
                         id="idProductsTableItem"
                         type="Navigation"
                         press="onColumnListItemPress"
-                        highlight="{= ${products>DiscountDate} ? 'Success' : 'None'}"
+                        highlight="{= ${DiscountDate} ? 'Success' : 'None'}"
                     >
-                        <ObjectIdentifier id="idProductsTableItemName" title="{Name}" />
-                        <ObjectNumber  id="idProductsTableItemPrice"
-                            state="{= ${products>DiscountDate} ? 'Success' : 'None'}"
+                        <ObjectIdentifier
+                            id="idProductsTableItemName"
+                            title="{Name}"
+                        />
+                        <ObjectNumber
+                            id="idProductsTableItemPrice"
+                            state="{= ${DiscountDate} ? 'Success' : 'None'}"
                             number="{
                                 parts: ['Price'],
                                 type: 'sap.ui.model.type.Currency',
@@ -263,5 +290,5 @@
                 </items>
             </Table>
         </f:content>
-    </f:DynamicPage> 
+    </f:DynamicPage>
 </mvc:View>

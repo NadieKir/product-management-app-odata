@@ -49,7 +49,7 @@ sap.ui.define(
        */
       sortButtonStyleFormatter: function (oSorter) {
         if (!oSorter) return "Default";
-        
+
         const { PATH, DESCENDING } = DEFAULT_PRODUCTS_SORTER;
 
         if (oSorter?.path === PATH && oSorter?.descending === DESCENDING) {
@@ -192,9 +192,9 @@ sap.ui.define(
         aSuppliersToRemove = []
       ) {
         const aExistingSuppliers = aProductSuppliers
-          .filter((oProduct) => !aSuppliersToRemove.includes(oProduct.Id))
+          .filter((oProduct) => !aSuppliersToRemove.includes(oProduct.ID))
           .concat(aSuppliersToAdd);
-        const aExistingSuppliersIds = aExistingSuppliers.map((oSupplier) => oSupplier?.Id);
+        const aExistingSuppliersIds = aExistingSuppliers.map((oSupplier) => oSupplier?.ID);
 
         return !aExistingSuppliersIds.includes(sSupplierId);
       },

@@ -27,7 +27,7 @@ sap.ui.define(
         const aSuppliers = this.getData();
 
         aPayload.forEach((oNewSupplierData) => {
-          oNewSupplierData.Id = helper.keepLettersAndNumbers(oNewSupplierData.Name);
+          oNewSupplierData.ID = helper.keepLettersAndNumbers(oNewSupplierData.Name);
           aSuppliers.push(oNewSupplierData);
         });
 
