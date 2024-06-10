@@ -45,6 +45,7 @@ entity Products : cuid  {
         DiscountDate : String;
         Price        : Decimal;
         Image        : String;
+        MainCategory : Association to Categories;
         Categories   : Association to many ProductsCategories
                                on Categories.Product = $self;
         Suppliers    : Association to many ProductsSuppliers
