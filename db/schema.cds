@@ -9,6 +9,7 @@ using {
 
 entity Categories : cuid {
         Name : String;
+        SubcategoryFor: Association to Categories;
 }
 
 entity Suppliers : cuid {

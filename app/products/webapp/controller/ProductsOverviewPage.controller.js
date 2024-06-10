@@ -140,10 +140,10 @@ sap.ui.define(
       onFilterBarSearch: function (oEvent) {
         const oProductsTableBinding = this.byId("idProductsTable").getBinding("items");
         const aFilterFields = oEvent.getParameter("selectionSet");
-
         const oFilter = this.createFilterFromFields(aFilterFields);
 
         oProductsTableBinding.filter(oFilter);
+
         this.updateProductsTableSelections();
       },
 
@@ -196,9 +196,9 @@ sap.ui.define(
 
         for (let oFilterField of aFilterFields) {
           const sFilterName = oFilterField.getProperty("name");
-          const uFilterFieldValue = this.getFieldValue(oFilterField);
+          const vFilterFieldValue = this.getFieldValue(oFilterField);
 
-          if (uFilterFieldValue === null) continue;
+          if (vFilterFieldValue === null) continue;
 
           switch (sFilterName) {
             case "Name":
@@ -206,23 +206,33 @@ sap.ui.define(
                 new Filter({
                   path: sFilterName,
                   operator: FilterOperator.Contains,
-                  value1: uFilterFieldValue,
+                  value1: vFilterFieldValue,
                   caseSensitive: false,
                 })
               );
 
               break;
 
+            case "MainCategory":
+              aFilters.push(
+                new Filter({
+                  path: sFilterName + "_ID",
+                  test: (aValue) => areIntersecting(aValue, vFilterFieldValue),
+                })
+              );
+
+              break;
+
             case "Suppliers":
-            case "Categories":
               aFilters.push(
                 new Filter({
                   path: sFilterName,
-                  test: (aValue) =>
-                    areIntersecting(
-                      aValue.map((oItem) => oItem.ID),
-                      uFilterFieldValue
-                    ),
+                  test: (aValue) => {
+                    return areIntersecting(
+                      aValue.map((oItem) => oItem.Supplier_ID),
+                      vFilterFieldValue
+                    );
+                  },
                 })
               );
 
@@ -233,8 +243,8 @@ sap.ui.define(
                 new Filter({
                   path: sFilterName,
                   operator: FilterOperator.BT,
-                  value1: `\/Date(${uFilterFieldValue.startDate.getTime()})\/`,
-                  value2: `\/Date(${uFilterFieldValue.endDate.getTime()})\/`,
+                  value1: `\/Date(${vFilterFieldValue.startDate.getTime()})\/`,
+                  value2: `\/Date(${vFilterFieldValue.endDate.getTime()})\/`,
                 })
               );
 

@@ -54,7 +54,7 @@
 
                             <fb:FilterGroupItem
                                 id="idCategoriesFilterGroup"
-                                name="Categories"
+                                name="MainCategory"
                                 label="{i18n>Categories}"
                                 groupName="productFiltersGroup"
                                 visibleInFilterBar="true"
@@ -62,11 +62,18 @@
                                 <fb:control>
                                     <MultiComboBox
                                         id="idCategoriesFilterGroupField"
-                                        name="Categories"
+                                        name="MainCategory"
                                         placeholder="{i18n>CategoryPlaceholder}"
                                         items="{
                                             path: '/Categories',
-                                            sorter: { path: 'Name' }
+                                            sorter: { path: 'Name' },
+                                            filters: [
+                                            {
+                                              path: 'SubcategoryFor_ID',
+                                              operator: 'EQ',
+                                              value1: null
+                                            }
+                                          ]
                                         }"
                                     >
                                         <core:Item
@@ -131,7 +138,12 @@
         <f:content>
             <Table
                 id="idProductsTable"
-                items="{/Products}"
+                items="{
+                    path: '/Products',
+                    parameters: {
+                      operationMode: 'Client'
+                    }
+                  }"
                 mode="MultiSelect"
                 multiSelectMode="ClearAll"
                 autoPopinMode="true"

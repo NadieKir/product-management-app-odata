@@ -78,13 +78,7 @@
         }
       }
     },
-    "resources": {
-      "css": [
-        {
-          "uri": "css/style.css"
-        }
-      ]
-    },
+    "resources": {},
     "routing": {
       "config": {
         "routerClass": "sap.m.routing.Router",
@@ -97,36 +91,36 @@
         "path": "productmanagement.products.view"
       },
       "routes": [
-				{
-					"pattern": "",
-					"name": "ProductsOverviewPage",
-					"target": [
-						"productsOverviewPage"
-					]
-				},
-				{
-					"pattern": "products/{productPath}",
-					"name": "ProductDetailsPage",
-					"target": [
-						"productDetailsPage"
-					]
-				}
+        {
+          "pattern": "",
+          "name": "ProductsOverviewPage",
+          "target": [
+            "productsOverviewPage"
+          ]
+        },
+        {
+          "pattern": "products/{productPath}",
+          "name": "ProductDetailsPage",
+          "target": [
+            "productDetailsPage"
+          ]
+        }
       ],
       "targets": {
-				"productsOverviewPage": {
-					"viewName": "ProductsOverviewPage",
-					"viewId": "productsOverviewPage",
-					"viewLevel": 1
-				},
-				"productDetailsPage": {
-					"viewName": "ProductDetailsPage",
-					"viewId": "productDetailsPage",
-					"viewLevel": 2
-				},
-				"notFoundPage": {
-					"viewName": "NotFoundPage",
-					"viewId": "notFoundPage"
-				}
+        "productsOverviewPage": {
+          "viewName": "ProductsOverviewPage",
+          "viewId": "productsOverviewPage",
+          "viewLevel": 1
+        },
+        "productDetailsPage": {
+          "viewName": "ProductDetailsPage",
+          "viewId": "productDetailsPage",
+          "viewLevel": 2
+        },
+        "notFoundPage": {
+          "viewName": "NotFoundPage",
+          "viewId": "notFoundPage"
+        }
       }
     },
     "rootView": {
