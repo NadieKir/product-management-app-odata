@@ -223,21 +223,6 @@ sap.ui.define(
 
               break;
 
-            case "Suppliers":
-              aFilters.push(
-                new Filter({
-                  path: sFilterName,
-                  test: (aValue) => {
-                    return areIntersecting(
-                      aValue.map((oItem) => oItem.Supplier_ID),
-                      vFilterFieldValue
-                    );
-                  },
-                })
-              );
-
-              break;
-
             case "ReleaseDate":
               aFilters.push(
                 new Filter({
