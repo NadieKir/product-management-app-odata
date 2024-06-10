@@ -48,11 +48,9 @@ sap.ui.define(
        * @returns {sap.m.ButtonType} - Sort button ButtonType.
        */
       sortButtonStyleFormatter: function (oSorter) {
-        if (!oSorter) return "Default";
-
         const { PATH, DESCENDING } = DEFAULT_PRODUCTS_SORTER;
 
-        if (oSorter?.path === PATH && oSorter?.descending === DESCENDING) {
+        if (oSorter?.sPath === PATH && oSorter?.bDescending === DESCENDING) {
           return "Default";
         }
 

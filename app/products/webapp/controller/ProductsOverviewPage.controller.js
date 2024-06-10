@@ -57,7 +57,7 @@ sap.ui.define(
        * Controller's "before rendering" lifecycle method.
        */
       onBeforeRendering: function () {
-        //this.setProductsTableSorter(DEFAULT_PRODUCTS_SORTER.PATH, DEFAULT_PRODUCTS_SORTER.DESCENDING);
+        this.setProductsTableSorter(DEFAULT_PRODUCTS_SORTER.PATH, DEFAULT_PRODUCTS_SORTER.DESCENDING);
       },
 
       /**
@@ -301,10 +301,10 @@ sap.ui.define(
        */
       setProductsTableSorter: function (sPath, bIsDescending) {
         const oTableBinding = this.byId("idProductsTable").getBinding("items");
-        const oGrouping = this.oViewModel.getProperty("/grouping");
+        const oGrouping = this.oViewModel.getProperty("/grouping") || null;
         const oSorter = new Sorter(sPath, bIsDescending);
 
-        oTableBinding.sort([oGrouping || {}, oSorter]);
+        oTableBinding.sort(oGrouping ? [oGrouping, oSorter] : oSorter);
 
         this.oViewModel.setProperty("/sorter", oSorter);
       },

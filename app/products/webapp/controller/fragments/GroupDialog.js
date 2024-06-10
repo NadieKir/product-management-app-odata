@@ -76,10 +76,10 @@ sap.ui.define(["sap/base/strings/formatMessage", "sap/ui/model/Sorter"], functio
      */
     setProductsTableGrouping: function (sPath, bIsDescending, fGroupingFunction) {
       const oTableBinding = this.byId("idProductsTable").getBinding("items");
-      const oSorter = this.oViewModel.getProperty("/sorter");
+      const oSorter = this.oViewModel.getProperty("/sorter") || null;
       const oGrouping = new Sorter(sPath, bIsDescending, fGroupingFunction);
 
-      oTableBinding.sort([oGrouping, oSorter]);
+      oTableBinding.sort(oSorter ? [oGrouping, oSorter] : oGrouping);
 
       this.oViewModel.setProperty("/grouping", oGrouping);
     },
