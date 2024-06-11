@@ -65,7 +65,6 @@ sap.ui.define(
        */
       onTableSelectionChange: function () {
         const aSelectedItems = this.byId("idProductsTable").getSelectedItems();
-
         const aSelectedItemsData = aSelectedItems.map((oItem) => oItem.getBindingContext().getObject());
 
         this.oViewModel.setProperty("/SelectedProducts", aSelectedItemsData);
@@ -78,10 +77,10 @@ sap.ui.define(
        */
       onColumnListItemPress: function (oEvent) {
         const oSource = oEvent.getSource();
-        const sProductPath = oSource.getBindingContext().getPath().substr(1);
+        const sProductId = oSource.getBindingContext().getObject().ID;
 
         this.getRouter().navTo("ProductDetailsPage", {
-          productPath: sProductPath,
+          productId: sProductId,
         });
       },
 
@@ -218,21 +217,6 @@ sap.ui.define(
                 new Filter({
                   path: sFilterName + "_ID",
                   test: (aValue) => areIntersecting(aValue, vFilterFieldValue),
-                })
-              );
-
-              break;
-
-            case "Suppliers":
-              aFilters.push(
-                new Filter({
-                  path: sFilterName,
-                  test: (aValue) => {
-                    return areIntersecting(
-                      aValue.map((oItem) => oItem.Supplier_ID),
-                      vFilterFieldValue
-                    );
-                  },
                 })
               );
 

@@ -1,0 +1,228 @@
+<mvc:View
+    controllerName="productmanagement.products.controller.ProductDetailsPage"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.uxap"
+    xmlns:l="sap.ui.layout"
+    xmlns:tnt="sap.tnt"
+    xmlns:m="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    core:require="{ formatMessage: 'sap/base/strings/formatMessage' }"
+    height="100%"
+>
+    <ObjectPageLayout
+        id="idProductPage"
+        enableLazyLoading="true"
+        showTitleInHeaderContent="false"
+        showHeaderContent="{= !${productDetailsView>/IsCreateMode}}"
+        showFooter="{productDetailsView>/IsEditMode}"
+    >
+        <headerTitle>
+            <ObjectPageDynamicHeaderTitle>
+                <expandedHeading>
+                    <m:HBox alignItems="Center">
+                        <m:Title
+                            text="{= ${Name} || ${i18n>CreateProduct}}"
+                            wrapping="true"
+                        />
+                        <tnt:InfoLabel
+                            text="{i18n>New.Uppercase}"
+                            colorScheme="8"
+                            visible="{
+                                path: 'ReleaseDate',
+                                formatter: '.formatter.isNewFormatter'
+                            }"
+                            class="sapUiSmallMarginBegin"
+                        />
+                    </m:HBox>
+                </expandedHeading>
+
+                <snappedHeading>
+                    <m:FlexBox
+                        fitContainer="true"
+                        alignItems="Center"
+                    >
+                        <m:Avatar
+                            src="{Image}"
+                            class="sapUiSmallMarginEnd"
+                            visible="{= !${productDetailsView>/IsCreateMode}}"
+                        />
+                        <m:Title
+                            text="{= ${Name} || ${i18n>CreateProduct}}"
+                            wrapping="true"
+                        />
+                        <tnt:InfoLabel
+                            text="{i18n>New.Uppercase}"
+                            colorScheme="8"
+                            visible="{
+                                path: 'ReleaseDate',
+                                formatter: '.formatter.isNewFormatter'
+                            }"
+                            class="sapUiSmallMarginBegin"
+                        />
+                    </m:FlexBox>
+                </snappedHeading>
+
+                <expandedContent>
+                    <m:Text
+                        text="{Description}"
+                        visible="{= !${productDetailsView>/IsCreateMode}}"
+                    />
+                </expandedContent>
+
+                <snappedContent>
+                    <m:Text
+                        text="{Description}"
+                        visible="{= !${productDetailsView>/IsCreateMode}}"
+                    />
+                </snappedContent>
+
+                <snappedTitleOnMobile>
+                    <m:Title
+                        text="{Description}"
+                        visible="{= !${productDetailsView>/IsCreateMode}}"
+                    />
+                </snappedTitleOnMobile>
+
+                <actions>
+                    <m:Button
+                        id="idEditProductButton"
+                        type="Emphasized"
+                        text="{i18n>Edit}"
+                        icon="sap-icon://edit"
+                        press="setEditMode"
+                        visible="{= !${productDetailsView>/IsEditMode}}"
+                    />
+                    <m:Button
+                        id="idDeleteProductButton"
+                        type="Default"
+                        text="{i18n>Delete}"
+                        icon="sap-icon://delete"
+                        press="onDeleteProductButtonPress"
+                        visible="{= !${productDetailsView>/IsCreateMode}}"
+                    />
+                </actions>
+            </ObjectPageDynamicHeaderTitle>
+        </headerTitle>
+
+        <headerContent>
+            <m:FlexBox
+                wrap="Wrap"
+                fitContainer="true"
+                alignItems="Center"
+            >
+                <m:Avatar
+                    class="sapUiLargeMarginEnd sapUiSmallMarginBottom"
+                    src="{Image}"
+                    displaySize="L"
+                />
+
+                <m:VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                    <m:Title text="{i18n>Price}" />
+                    <m:ObjectNumber
+                        class="sapMObjectNumberLarge"
+                        number="{
+                            parts: ['Price'],
+                            type: 'sap.ui.model.type.Currency',
+                            formatOptions: {currencyCode : false, groupingSeparator: ' ', decimals: 0 }
+                        }"
+                        unit="USD"
+                        state="Information"
+                    />
+                </m:VBox>
+
+                <m:VBox
+                    class="sapUiMediumMarginEnd sapUiSmallMarginBottom"
+                    visible="{= !!${DiscountDate}}"
+                >
+                    <m:Title text="{i18n>Status}" />
+                    <m:ObjectStatus
+                        class="sapMObjectStatusLarge"
+                        text="{i18n>Sale.Uppercase}"
+                        state="Success"
+                    />
+                </m:VBox>
+
+                <m:VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                    <m:Title text="{i18n>ReleaseDate}" />
+                    <m:ObjectStatus
+                        class="sapMObjectStatusLarge"
+                        text="{
+                            path: 'ReleaseDate',
+                            formatter: '.formatter.jsonDateStringFormatter'
+                        }"
+                    />
+                </m:VBox>
+
+                <m:VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                    <m:Title text="{i18n>OnMarket}" />
+                    <m:ObjectStatus
+                        class="sapMObjectStatusLarge"
+                        text="{
+                            parts: [
+                                'i18n>Days.WithAmount',
+                                {
+                                    path: 'ReleaseDate',
+                                    formatter: '.formatter.passedDaysFormatter'
+                                }
+                            ],
+                            formatter: 'formatMessage'
+                          }"
+                    />
+                </m:VBox>
+            </m:FlexBox>
+        </headerContent>
+
+        <sections>
+            <ObjectPageSection
+                id="idDetailsSection"
+                title="{i18n>Details}"
+                titleUppercase="false"
+            >
+                <ObjectPageSubSection>
+                    <m:Text text="Details" />
+                </ObjectPageSubSection>
+            </ObjectPageSection>
+
+            <ObjectPageSection
+                id="idSuppliersSection"
+                title="{i18n>Suppliers}"
+                titleUppercase="false"
+            >
+                <ObjectPageSubSection>
+                    <m:Text text="Suppliers" />
+                </ObjectPageSubSection>
+            </ObjectPageSection>
+
+            <ObjectPageSection
+                id="idCommentsSection"
+                title="{i18n>Comments}"
+                titleUppercase="false"
+                visible="{= !${productDetailsView>/IsCreateMode}}"
+            >
+                <ObjectPageSubSection>
+                    <m:Text text="Comments" />
+                </ObjectPageSubSection>
+            </ObjectPageSection>
+        </sections>
+
+        <footer>
+            <m:Toolbar>
+                <m:ToolbarSpacer />
+                <m:Button
+                    id="idSaveProductButton"
+                    type="Emphasized"
+                    text="{i18n>Save}"
+                    enabled="{productDetailsView>/IsProductFormValid}"
+                    press="onSaveProductButtonPress"
+                />
+                <m:Button
+                    id="idCancelProductEditingButton"
+                    type="Default"
+                    text="{i18n>Cancel}"
+                    press="onCancelProductEditingButtonPress"
+                />
+            </m:Toolbar>
+        </footer>
+    </ObjectPageLayout>
+</mvc:View>
