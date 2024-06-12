@@ -6,9 +6,11 @@ sap.ui.define(
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
+    "sap/ui/model/Sorter",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
     "productmanagement/products/model/formatter/formatter",
+    "productmanagement/products/constant/constant",
   ],
   function (
     BaseController,
@@ -17,11 +19,15 @@ sap.ui.define(
     JSONModel,
     Filter,
     FilterOperator,
+    Sorter,
     MessageBox,
     MessageToast,
-    formatter
+    formatter,
+    constant
   ) {
     "use strict";
+
+    const { DEFAULT_PRODUCTS_SORTER, SORT_DIALOG_NAME, GROUP_DIALOG_NAME } = constant;
 
     return BaseController.extend("productmanagement.products.controller.ProductsOverviewPage", {
       formatter,
@@ -258,6 +264,28 @@ sap.ui.define(
 
           oProductsTable.setSelectedItem(oProductToMarkSelected);
         });
+      },
+
+      /**
+       * @async
+       *
+       * Products sort button press event handler.
+       */
+      onSortButtonPressed: async function () {
+        const oSortDialog = await this.getDialog(SORT_DIALOG_NAME);
+
+        oSortDialog.open();
+      },
+
+      /**
+       * @async
+       *
+       * Products group button press event handler.
+       */
+      onGroupButtonPressed: async function () {
+        const oGroupDialog = await this.getDialog(GROUP_DIALOG_NAME);
+
+        oGroupDialog.open();
       },
     });
   }
