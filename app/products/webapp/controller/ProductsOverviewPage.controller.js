@@ -74,7 +74,7 @@ sap.ui.define(
        */
       onColumnListItemPress: function (oEvent) {
         const oSource = oEvent.getSource();
-        const sProductId = oSource.getBindingContext().getObject().ID;
+        const sProductId = oSource.getBindingContext().getProperty("ID");
 
         this.getRouter().navTo("ProductDetailsPage", {
           productId: sProductId,

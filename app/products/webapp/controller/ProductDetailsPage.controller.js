@@ -23,37 +23,51 @@ sap.ui.define(
        * @param {sap.ui.base.Event} oEvent - Event object.
        */
       onPatternMatched: function (oEvent) {
-        const sProductId = oEvent.getParameter("arguments").productId;
-        const bIsPageInCreateMode = sProductId === "create";
-
         this.setDefaultViewModel();
+        this.byId("idProductPage").setVisible(true);
 
-        if (bIsPageInCreateMode) {
+        const sProductId = oEvent.getParameter("arguments").productId;
+
+        if (sProductId === "create") {
           this.oViewModel.setProperty("/IsCreateMode", true);
 
           return;
         }
 
+        this.bindProductToView(sProductId);
+      },
+
+      /**
+       * Bind product with sProductId id to view.
+       *
+       * @param {string} sProductId - Product id.
+       */
+      bindProductToView: async function (sProductId) {
         const oView = this.getView();
         const oDataModel = oView.getModel();
 
-        const fSuccessHandler = (oProduct) => {
-          const sProductKey = oDataModel.createKey("/Products", { ID: sProductId });
+        await oDataModel.metadataLoaded();
 
-          oView.bindObject({
-            path: sProductKey,
-          });
+        const sProductKey = oDataModel.createKey("/Products", { ID: sProductId });
 
-          this.byId("idProductPage").setVisible(true);
+        const fDataRequestedHandler = () => oView.setBusy(true);
+
+        const fDataReceivedHandler = (oData) => {
+          const oReceivedProduct = oData.getParameter("data");
+
+          if (!oReceivedProduct) {
+            this.getRouter().getTargets().display("notFoundPage");
+          }
+
+          oView.setBusy(false);
         };
 
-        const fErrorHandler = (oError) => {
-          this.getRouter().getTargets().display("notFoundPage");
-        };
-
-        oDataModel.read(`/Products(${sProductId})`, {
-          success: fSuccessHandler,
-          error: fErrorHandler,
+        oView.bindObject({
+          path: sProductKey,
+          events: {
+            dataRequested: fDataRequestedHandler,
+            dataReceived: fDataReceivedHandler,
+          },
         });
       },
 
