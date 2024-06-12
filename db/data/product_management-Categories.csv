@@ -1,15 +1,15 @@
-ID;name;
-1;Phone;
-2;Laptop;
-3;Smartwatch;
-4;Headphones;
-5;iOS;
-6;Android;
-7;Intel Core i5;
-8;AMD Ryzen 9;,
-9;M1;
-10;Apple;
-11;Huawei;
-12;Xiaomi;
-13;Wired;
-14;Wireless;
+ID;Name;
+20466922-7d57-4e76-b14c-e53fd97dcc11;Phone;
+20466922-7d57-4e76-b14c-e53fd97dcc12;Laptop;
+20466922-7d57-4e76-b14c-e53fd97dcc13;Smartwatch;
+20466922-7d57-4e76-b14c-e53fd97dcc14;Headphones;
+20466922-7d57-4e76-b14c-e53fd97dcc15;iOS;
+20466922-7d57-4e76-b14c-e53fd97dcc16;Android;
+20466922-7d57-4e76-b14c-e53fd97dcc17;Intel Core i5;
+20466922-7d57-4e76-b14c-e53fd97dcc18;AMD Ryzen 9;,
+20466922-7d57-4e76-b14c-e53fd97dcc19;M1;
+20466922-7d57-4e76-b14c-e53fd97dcc20;Apple;
+20466922-7d57-4e76-b14c-e53fd97dcc21;Huawei;
+20466922-7d57-4e76-b14c-e53fd97dcc22;Xiaomi;
+20466922-7d57-4e76-b14c-e53fd97dcc23;Wired;
+20466922-7d57-4e76-b14c-e53fd97dcc24;Wireless;
