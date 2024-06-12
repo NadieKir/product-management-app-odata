@@ -86,34 +86,6 @@
                             </fb:FilterGroupItem>
 
                             <fb:FilterGroupItem
-                                id="idSuppliersFilterGroup"
-                                name="Suppliers"
-                                label="{i18n>Suppliers}"
-                                groupName="productFiltersGroup"
-                                visibleInFilterBar="true"
-                            >
-                                <fb:control>
-                                    <MultiInput
-                                        id="idSuppliersFilterGroupField"
-                                        name="Suppliers"
-                                        placeholder="{i18n>SuppliersPlaceholder}"
-                                        showClearIcon="true"
-                                        showSuggestion="true"
-                                        showValueHelp="false"
-                                        suggestionItems="{/Suppliers}"
-                                    >
-                                        <suggestionItems>
-                                            <core:Item
-                                                id="idSuppliersFilterGroupFieldItem"
-                                                key="{ID}"
-                                                text="{Name}"
-                                            />
-                                        </suggestionItems>
-                                    </MultiInput>
-                                </fb:control>
-                            </fb:FilterGroupItem>
-
-                            <fb:FilterGroupItem
                                 id="idReleaseDateFilterGroup"
                                 name="ReleaseDate"
                                 label="{i18n>ReleaseDate}"
@@ -288,7 +260,7 @@
                             id="idProductsTableItemReleaseDate"
                             text="{
                                 path: 'ReleaseDate',
-                                formatter: '.formatter.jsonDateStringFormatter'
+                                type: 'sap.ui.model.type.Date'
                             }"
                             wrapping="false"
                         />

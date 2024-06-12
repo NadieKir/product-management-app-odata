@@ -6,12 +6,9 @@ sap.ui.define(
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
-    "sap/ui/model/Sorter",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
     "productmanagement/products/model/formatter/formatter",
-    "productmanagement/products/constant/constant",
-    "productmanagement/products/helper/helper",
   ],
   function (
     BaseController,
@@ -20,17 +17,11 @@ sap.ui.define(
     JSONModel,
     Filter,
     FilterOperator,
-    Sorter,
     MessageBox,
     MessageToast,
-    formatter,
-    constant,
-    helper
+    formatter
   ) {
     "use strict";
-
-    const { DEFAULT_PRODUCTS_SORTER, SORT_DIALOG_NAME, GROUP_DIALOG_NAME } = constant;
-    const { areIntersecting } = helper;
 
     return BaseController.extend("productmanagement.products.controller.ProductsOverviewPage", {
       formatter,
@@ -65,33 +56,9 @@ sap.ui.define(
        */
       onTableSelectionChange: function () {
         const aSelectedItems = this.byId("idProductsTable").getSelectedItems();
-
         const aSelectedItemsData = aSelectedItems.map((oItem) => oItem.getBindingContext().getObject());
 
         this.oViewModel.setProperty("/SelectedProducts", aSelectedItemsData);
-      },
-
-      /**
-       * Product list item press event handler.
-       *
-       * @param {sap.ui.base.Event} oEvent - Event object.
-       */
-      onColumnListItemPress: function (oEvent) {
-        const oSource = oEvent.getSource();
-        const sProductPath = oSource.getBindingContext().getPath().substr(1);
-
-        this.getRouter().navTo("ProductDetailsPage", {
-          productPath: sProductPath,
-        });
-      },
-
-      /**
-       * Create product button press event handler.
-       */
-      onCreateProductButtonPress: function () {
-        this.getRouter().navTo("ProductDetailsPage", {
-          productPath: "create",
-        });
       },
 
       /**
@@ -163,28 +130,6 @@ sap.ui.define(
       },
 
       /**
-       * @async
-       *
-       * Products sort button press event handler.
-       */
-      onSortButtonPressed: async function () {
-        const oSortDialog = await this.getDialog(SORT_DIALOG_NAME);
-
-        oSortDialog.open();
-      },
-
-      /**
-       * @async
-       *
-       * Products group button press event handler.
-       */
-      onGroupButtonPressed: async function () {
-        const oGroupDialog = await this.getDialog(GROUP_DIALOG_NAME);
-
-        oGroupDialog.open();
-      },
-
-      /**
        * Create filter from fields in filter bar (all filters will be applied together).
        *
        * @param {sap.ui.core.mvc.Controller[]} aFilterFields - Filter bar fields.
@@ -217,22 +162,7 @@ sap.ui.define(
               aFilters.push(
                 new Filter({
                   path: sFilterName + "_ID",
-                  test: (aValue) => areIntersecting(aValue, vFilterFieldValue),
-                })
-              );
-
-              break;
-
-            case "Suppliers":
-              aFilters.push(
-                new Filter({
-                  path: sFilterName,
-                  test: (aValue) => {
-                    return areIntersecting(
-                      aValue.map((oItem) => oItem.Supplier_ID),
-                      vFilterFieldValue
-                    );
-                  },
+                  test: (aValue) => vFilterFieldValue.includes(aValue),
                 })
               );
 
@@ -243,8 +173,8 @@ sap.ui.define(
                 new Filter({
                   path: sFilterName,
                   operator: FilterOperator.BT,
-                  value1: `\/Date(${vFilterFieldValue.startDate.getTime()})\/`,
-                  value2: `\/Date(${vFilterFieldValue.endDate.getTime()})\/`,
+                  value1: vFilterFieldValue.startDate,
+                  value2: vFilterFieldValue.endDate,
                 })
               );
 
