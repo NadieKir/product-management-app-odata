@@ -260,7 +260,7 @@
                             id="idProductsTableItemReleaseDate"
                             text="{
                                 path: 'ReleaseDate',
-                                formatter: '.formatter.jsonDateStringFormatter'
+                                type: 'sap.ui.model.type.Date'
                             }"
                             wrapping="false"
                         />

@@ -4,33 +4,12 @@ sap.ui.define(
     "productmanagement/products/controller/fragments/GroupDialog",
     "productmanagement/products/controller/fragments/SortDialog",
     "sap/ui/model/json/JSONModel",
-    "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator",
-    "sap/ui/model/Sorter",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
     "productmanagement/products/model/formatter/formatter",
-    "productmanagement/products/constant/constant",
-    "productmanagement/products/helper/helper",
   ],
-  function (
-    BaseController,
-    GroupDialog,
-    SortDialog,
-    JSONModel,
-    Filter,
-    FilterOperator,
-    Sorter,
-    MessageBox,
-    MessageToast,
-    formatter,
-    constant,
-    helper
-  ) {
+  function (BaseController, GroupDialog, SortDialog, JSONModel, MessageBox, MessageToast, formatter) {
     "use strict";
-
-    const { DEFAULT_PRODUCTS_SORTER, SORT_DIALOG_NAME, GROUP_DIALOG_NAME } = constant;
-    const { areIntersecting } = helper;
 
     return BaseController.extend("productmanagement.products.controller.ProductsOverviewPage", {
       formatter,
@@ -54,44 +33,13 @@ sap.ui.define(
       },
 
       /**
-       * Controller's "before rendering" lifecycle method.
-       */
-      onBeforeRendering: function () {
-        //this.setProductsTableSorter(DEFAULT_PRODUCTS_SORTER.PATH, DEFAULT_PRODUCTS_SORTER.DESCENDING);
-      },
-
-      /**
        * Products table selection change event handler.
        */
       onTableSelectionChange: function () {
         const aSelectedItems = this.byId("idProductsTable").getSelectedItems();
-
         const aSelectedItemsData = aSelectedItems.map((oItem) => oItem.getBindingContext().getObject());
 
         this.oViewModel.setProperty("/SelectedProducts", aSelectedItemsData);
-      },
-
-      /**
-       * Product list item press event handler.
-       *
-       * @param {sap.ui.base.Event} oEvent - Event object.
-       */
-      onColumnListItemPress: function (oEvent) {
-        const oSource = oEvent.getSource();
-        const sProductPath = oSource.getBindingContext().getPath().substr(1);
-
-        this.getRouter().navTo("ProductDetailsPage", {
-          productPath: sProductPath,
-        });
-      },
-
-      /**
-       * Create product button press event handler.
-       */
-      onCreateProductButtonPress: function () {
-        this.getRouter().navTo("ProductDetailsPage", {
-          productPath: "create",
-        });
       },
 
       /**
@@ -160,28 +108,6 @@ sap.ui.define(
         oProductsTableBinding.filter();
 
         this.updateProductsTableSelections();
-      },
-
-      /**
-       * @async
-       *
-       * Products sort button press event handler.
-       */
-      onSortButtonPressed: async function () {
-        const oSortDialog = await this.getDialog(SORT_DIALOG_NAME);
-
-        oSortDialog.open();
-      },
-
-      /**
-       * @async
-       *
-       * Products group button press event handler.
-       */
-      onGroupButtonPressed: async function () {
-        const oGroupDialog = await this.getDialog(GROUP_DIALOG_NAME);
-
-        oGroupDialog.open();
       },
 
       /**
@@ -276,22 +202,6 @@ sap.ui.define(
               throw new Error(`Can't reset input with name '${sFilterFieldControlName}'`);
           }
         });
-      },
-
-      /**
-       * Set products table sorter.
-       *
-       * @param {string} sPath - Property path to sort by.
-       * @param {boolean} bIsDescending - Whether sorting should be applied in descending order.
-       */
-      setProductsTableSorter: function (sPath, bIsDescending) {
-        const oTableBinding = this.byId("idProductsTable").getBinding("items");
-        const oGrouping = this.oViewModel.getProperty("/grouping");
-        const oSorter = new Sorter(sPath, bIsDescending);
-
-        oTableBinding.sort([oGrouping || {}, oSorter]);
-
-        this.oViewModel.setProperty("/sorter", oSorter);
       },
 
       /**
