@@ -4,11 +4,23 @@ sap.ui.define(
     "productmanagement/products/controller/fragments/GroupDialog",
     "productmanagement/products/controller/fragments/SortDialog",
     "sap/ui/model/json/JSONModel",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
     "productmanagement/products/model/formatter/formatter",
   ],
-  function (BaseController, GroupDialog, SortDialog, JSONModel, MessageBox, MessageToast, formatter) {
+  function (
+    BaseController,
+    GroupDialog,
+    SortDialog,
+    JSONModel,
+    Filter,
+    FilterOperator,
+    MessageBox,
+    MessageToast,
+    formatter
+  ) {
     "use strict";
 
     return BaseController.extend("productmanagement.products.controller.ProductsOverviewPage", {
@@ -143,7 +155,7 @@ sap.ui.define(
               aFilters.push(
                 new Filter({
                   path: sFilterName + "_ID",
-                  test: (aValue) => areIntersecting(aValue, vFilterFieldValue),
+                  test: (aValue) => vFilterFieldValue.includes(aValue),
                 })
               );
 
@@ -154,8 +166,8 @@ sap.ui.define(
                 new Filter({
                   path: sFilterName,
                   operator: FilterOperator.BT,
-                  value1: `\/Date(${vFilterFieldValue.startDate.getTime()})\/`,
-                  value2: `\/Date(${vFilterFieldValue.endDate.getTime()})\/`,
+                  value1: vFilterFieldValue.startDate,
+                  value2: vFilterFieldValue.endDate,
                 })
               );
 
