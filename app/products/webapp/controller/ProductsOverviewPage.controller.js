@@ -11,7 +11,6 @@ sap.ui.define(
     "sap/m/MessageToast",
     "productmanagement/products/model/formatter/formatter",
     "productmanagement/products/constant/constant",
-    "productmanagement/products/helper/helper",
   ],
   function (
     BaseController,
@@ -24,13 +23,11 @@ sap.ui.define(
     MessageBox,
     MessageToast,
     formatter,
-    constant,
-    helper
+    constant
   ) {
     "use strict";
 
     const { DEFAULT_PRODUCTS_SORTER, SORT_DIALOG_NAME, GROUP_DIALOG_NAME } = constant;
-    const { areIntersecting } = helper;
 
     return BaseController.extend("productmanagement.products.controller.ProductsOverviewPage", {
       formatter,
@@ -81,15 +78,6 @@ sap.ui.define(
 
         this.getRouter().navTo("ProductDetailsPage", {
           productId: sProductId,
-        });
-      },
-
-      /**
-       * Create product button press event handler.
-       */
-      onCreateProductButtonPress: function () {
-        this.getRouter().navTo("ProductDetailsPage", {
-          productPath: "create",
         });
       },
 
@@ -162,28 +150,6 @@ sap.ui.define(
       },
 
       /**
-       * @async
-       *
-       * Products sort button press event handler.
-       */
-      onSortButtonPressed: async function () {
-        const oSortDialog = await this.getDialog(SORT_DIALOG_NAME);
-
-        oSortDialog.open();
-      },
-
-      /**
-       * @async
-       *
-       * Products group button press event handler.
-       */
-      onGroupButtonPressed: async function () {
-        const oGroupDialog = await this.getDialog(GROUP_DIALOG_NAME);
-
-        oGroupDialog.open();
-      },
-
-      /**
        * Create filter from fields in filter bar (all filters will be applied together).
        *
        * @param {sap.ui.core.mvc.Controller[]} aFilterFields - Filter bar fields.
@@ -216,7 +182,7 @@ sap.ui.define(
               aFilters.push(
                 new Filter({
                   path: sFilterName + "_ID",
-                  test: (aValue) => areIntersecting(aValue, vFilterFieldValue),
+                  test: (aValue) => vFilterFieldValue.includes(aValue),
                 })
               );
 
@@ -227,8 +193,8 @@ sap.ui.define(
                 new Filter({
                   path: sFilterName,
                   operator: FilterOperator.BT,
-                  value1: `\/Date(${vFilterFieldValue.startDate.getTime()})\/`,
-                  value2: `\/Date(${vFilterFieldValue.endDate.getTime()})\/`,
+                  value1: vFilterFieldValue.startDate,
+                  value2: vFilterFieldValue.endDate,
                 })
               );
 
@@ -312,6 +278,28 @@ sap.ui.define(
 
           oProductsTable.setSelectedItem(oProductToMarkSelected);
         });
+      },
+
+      /**
+       * @async
+       *
+       * Products sort button press event handler.
+       */
+      onSortButtonPressed: async function () {
+        const oSortDialog = await this.getDialog(SORT_DIALOG_NAME);
+
+        oSortDialog.open();
+      },
+
+      /**
+       * @async
+       *
+       * Products group button press event handler.
+       */
+      onGroupButtonPressed: async function () {
+        const oGroupDialog = await this.getDialog(GROUP_DIALOG_NAME);
+
+        oGroupDialog.open();
       },
     });
   }

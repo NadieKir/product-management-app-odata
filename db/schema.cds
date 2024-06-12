@@ -3,7 +3,6 @@ namespace product_management;
 using {
         managed,
         cuid,
-        User,
         sap.common.CodeList
 } from '@sap/cds/common';
 
@@ -42,8 +41,8 @@ entity Products : cuid  {
         Name         : String;
         Description  : String;
         Rating       : Integer;
-        ReleaseDate  : String;
-        DiscountDate : String;
+        ReleaseDate  : Date;
+        DiscountDate : Date;
         Price        : Decimal;
         Image        : String;
         MainCategory : Association to Categories;
