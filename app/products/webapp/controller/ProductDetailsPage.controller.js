@@ -50,25 +50,45 @@ sap.ui.define(
 
         const sProductKey = oDataModel.createKey("/Products", { ID: sProductId });
 
-        const fDataRequestedHandler = () => oView.setBusy(true);
+        const fDataRequestedHandler = () => {
+          oView.setBusyIndicatorDelay(0);
+          oView.setBusy(true);
+        };
 
         const fDataReceivedHandler = (oData) => {
           const oReceivedProduct = oData.getParameter("data");
 
           if (!oReceivedProduct) {
             this.getRouter().getTargets().display("notFoundPage");
+
+            return;
           }
 
+          this.setProductSubcategoriesText(oReceivedProduct);
           oView.setBusy(false);
         };
 
         oView.bindObject({
           path: sProductKey,
+          parameters: {
+            expand: "Category,Subcategories/Subcategory",
+          },
           events: {
             dataRequested: fDataRequestedHandler,
             dataReceived: fDataReceivedHandler,
           },
         });
+      },
+
+      /**
+       * Set product subcategories separated by comma to text control.
+       *
+       * @param {Object} sProductId - Product id.
+       */
+      setProductSubcategoriesText: function (oProduct) {
+        const aSubcategoriesNames = oProduct.Subcategories.map((oCategory) => oCategory.Subcategory.Name);
+
+        this.byId("idProductSubcategoriesText").setText(aSubcategoriesNames.join(", "));
       },
 
       /**
@@ -119,6 +139,22 @@ sap.ui.define(
        * Delete product button press event handler.
        */
       onDeleteProductButtonPress: function () {},
+
+      /**
+       * ProductDataField field group validateFieldGroup event handler.
+       */
+      onProductDataFieldGroupValidate: function () {
+        this.setProductFormValidity();
+      },
+
+      /**
+       * Set weather product form is valid.
+       */
+      setProductFormValidity: function () {
+        const isFieldGroupValid = this.isFieldGroupValid("ProductDataField");
+
+        this.oViewModel.setProperty("/IsProductFormValid", isFieldGroupValid);
+      },
     });
   }
 );

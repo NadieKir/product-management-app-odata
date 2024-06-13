@@ -8,6 +8,5 @@ service ProductService {
     entity Categories as projection on pm.Categories;
     entity Suppliers as projection on pm.Suppliers;
     entity ProductsSuppliers as projection on pm.ProductsSuppliers;
-    entity ProductsCategories as projection on pm.ProductsCategories;
-    //annotate Products with @odata.draft.enabled;
+    entity ProductsCategories as projection on pm.ProductsSubcategories;
 }

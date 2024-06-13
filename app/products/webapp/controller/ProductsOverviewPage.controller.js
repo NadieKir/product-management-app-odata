@@ -178,7 +178,7 @@ sap.ui.define(
 
               break;
 
-            case "MainCategory":
+            case "Category":
               aFilters.push(
                 new Filter({
                   path: sFilterName + "_ID",

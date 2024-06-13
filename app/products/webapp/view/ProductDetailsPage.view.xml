@@ -180,7 +180,233 @@
                 titleUppercase="false"
             >
                 <ObjectPageSubSection>
-                    <m:Text text="Details" />
+                    <f:SimpleForm
+                        id="idProductForm"
+                        editable="{productDetailsView>/IsEditMode}"
+                        layout="ResponsiveGridLayout"
+                        adjustLabelSpan="false"
+                        labelSpanXL="3"
+                        labelSpanL="3"
+                        labelSpanM="3"
+                        labelSpanS="12"
+                        emptySpanXL="2"
+                        emptySpanL="2"
+                        emptySpanM="2"
+                        emptySpanS="0"
+                        columnsXL="1"
+                        columnsL="1"
+                        columnsM="1"
+                        validateFieldGroup="onProductDataFieldGroupValidate"
+                    >
+                        <f:content>
+                            <m:Label
+                                text="{i18n>Name}"
+                                required="{productDetailsView>/IsEditMode}"
+                            />
+                            <l:VerticalLayout>
+                                <m:Input
+                                    name="Name"
+                                    fieldGroupIds="ProductDataField,ProductName"
+                                    placeholder="{i18n>ProductNamePlaceholder}"
+                                    value="{
+                                        path : 'editableProduct>/Name',
+                                        type : 'sap.ui.model.type.String',
+                                        constraints : {
+                                            minLength: 2
+                                        }
+                                    }"
+                                    visible="{productDetailsView>/IsEditMode}"
+                                    required="true"
+                                />
+                                <m:Text
+                                    text="{Name}"
+                                    visible="{= !${productDetailsView>/IsEditMode}}"
+                                />
+                            </l:VerticalLayout>
+
+                            <m:Label
+                                text="{i18n>Price}"
+                                required="{productDetailsView>/IsEditMode}"
+                            />
+                            <l:VerticalLayout>
+                                <m:Input
+                                    name="Price"
+                                    type="Number"
+                                    fieldGroupIds="ProductDataField,Price"
+                                    placeholder="{i18n>PricePlaceholder}"
+                                    value="{
+                                    path : 'editableProduct>/Price',
+                                    type : 'sap.ui.model.type.Float',
+                                    formatOptions: { groupingSeparator: '', decimals: 0, decimalSeparator: '.' }
+                                }"
+                                    textAlign="Right"
+                                    description="USD"
+                                    visible="{productDetailsView>/IsEditMode}"
+                                    required="true"
+                                />
+                                <m:Text
+                                    text="{
+                                    parts: [{ path: 'Price' }, { value: 'USD' }],
+                                    type: 'sap.ui.model.type.Currency',
+                                    formatOptions: { currencyCode : true, groupingSeparator: ' ', decimals: 0, decimalSeparator: '.' }
+                                }"
+                                    visible="{= !${productDetailsView>/IsEditMode}}"
+                                />
+                            </l:VerticalLayout>
+
+                            <m:Label
+                                text="{i18n>Category}"
+                                required="{productDetailsView>/IsEditMode}"
+                            />
+                            <l:VerticalLayout>
+                                <m:MultiComboBox
+                                    name="Subcategories"
+                                    fieldGroupIds="ProductDataField,Subcategories"
+                                    placeholder="{i18n>CategoryPlaceholder}"
+                                    items="{
+                                    path: 'categories>/',
+                                    sorter: { path: 'Name' }
+                                }"
+                                    selectedKeys="{editableProduct>/Subcategories}"
+                                    visible="{productDetailsView>/IsEditMode}"
+                                    selectionChange="validateRequiredMultiComboBox"
+                                    required="true"
+                                >
+                                    <core:Item
+                                        key="{categories>Id}"
+                                        text="{categories>Name}"
+                                    />
+                                </m:MultiComboBox>
+                                <m:Text
+                                    text="{Category/Name}"
+                                    visible="{= !${productDetailsView>/IsEditMode}}"
+                                />
+                            </l:VerticalLayout>
+
+                            <m:Label
+                                text="{i18n>Subcategories}"
+                                required="{productDetailsView>/IsEditMode}"
+                            />
+                            <l:VerticalLayout>
+                                <m:MultiComboBox
+                                    name="Subcategories"
+                                    fieldGroupIds="ProductDataField,Subcategories"
+                                    placeholder="{i18n>CategoryPlaceholder}"
+                                    items="{
+                                        path: 'categories>/',
+                                        sorter: { path: 'Name' }
+                                    }"
+                                    selectedKeys="{editableProduct>/Subcategories}"
+                                    visible="{productDetailsView>/IsEditMode}"
+                                    selectionChange="validateRequiredMultiComboBox"
+                                    required="true"
+                                >
+                                    <core:Item
+                                        key="{categories>Id}"
+                                        text="{categories>Name}"
+                                    />
+                                </m:MultiComboBox>
+                                <m:Text
+                                    id="idProductSubcategoriesText"
+                                    visible="{= !${productDetailsView>/IsEditMode}}"
+                                />
+                            </l:VerticalLayout>
+
+                            <m:Label
+                                text="{i18n>Description}"
+                                required="{productDetailsView>/IsEditMode}"
+                            />
+                            <l:VerticalLayout>
+                                <m:TextArea
+                                    name="Description"
+                                    fieldGroupIds="ProductDataField,Description"
+                                    placeholder="{i18n>DescriptionPlaceholder}"
+                                    width="100%"
+                                    value="{
+                                    path : 'editableProduct>/Description',
+                                    type : 'sap.ui.model.type.String',
+                                    constraints : {
+                                        minLength: 5,
+                                        maxLength: 70
+                                    }
+                                }"
+                                    growing="true"
+                                    visible="{productDetailsView>/IsEditMode}"
+                                    required="true"
+                                />
+                                <m:Text
+                                    text="{Description}"
+                                    emptyIndicatorMode='On'
+                                    visible="{= !${productDetailsView>/IsEditMode}}"
+                                />
+                            </l:VerticalLayout>
+
+                            <m:Label
+                                text="{i18n>ReleaseDate}"
+                                required="{productDetailsView>/IsEditMode}"
+                            />
+                            <l:VerticalLayout>
+                                <m:DatePicker
+                                    name="ReleaseDate"
+                                    fieldGroupIds="ProductDataField,ReleaseDate"
+                                    value="{
+                                    path: 'editableProduct>/ReleaseDate',
+                                    type: 'custom.type.RequiredDate'
+                                }"
+                                    maxDate="{editableProduct>/SupportData/MaxReleaseDate}"
+                                    visible="{productDetailsView>/IsEditMode}"
+                                    required="true"
+                                    change="onReleaseDatePickerChange"
+                                />
+                                <m:Text
+                                    text="{
+                                        path: 'ReleaseDate',                        
+                                        type: 'sap.ui.model.type.Date'
+                                    }"
+                                    visible="{= !${productDetailsView>/IsEditMode}}"
+                                />
+                            </l:VerticalLayout>
+
+                            <m:Label text="{i18n>DiscountDate}" />
+                            <l:VerticalLayout>
+                                <m:DatePicker
+                                    id="idDiscountDate"
+                                    name="DiscountDate"
+                                    fieldGroupIds="ProductDataField,DiscountDate"
+                                    value="{
+                                        path: 'editableProduct>/DiscountDate',
+                                        type: 'sap.ui.model.type.Date'
+                                    }"
+                                    maxDate="{editableProduct>/SupportData/MaxDiscountDate}"
+                                    minDate="{editableProduct>/SupportData/MinDiscountDate}"
+                                    visible="{productDetailsView>/IsEditMode}"
+                                />
+                                <m:Text
+                                    text="{
+                                        path: 'DiscountDate',
+                                        type: 'sap.ui.model.type.Date'
+                                    }"
+                                    emptyIndicatorMode='On'
+                                    visible="{= !${productDetailsView>/IsEditMode}}"
+                                />
+                            </l:VerticalLayout>
+
+                            <m:Label text="{i18n>Rating}" />
+                            <l:VerticalLayout>
+                                <m:RatingIndicator
+                                    fieldGroupIds="ProductDataField,Rating"
+                                    value="{editableProduct>/Rating}"
+                                    displayOnly="false"
+                                    visible="{productDetailsView>/IsEditMode}"
+                                />
+                                <m:RatingIndicator
+                                    value="{Rating}"
+                                    displayOnly="true"
+                                    visible="{= !${productDetailsView>/IsEditMode}}"
+                                />
+                            </l:VerticalLayout>
+                        </f:content>
+                    </f:SimpleForm>
                 </ObjectPageSubSection>
             </ObjectPageSection>
 

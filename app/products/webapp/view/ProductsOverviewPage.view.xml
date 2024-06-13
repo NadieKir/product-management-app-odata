@@ -36,7 +36,6 @@
                     >
                         <fb:filterGroupItems>
                             <fb:FilterGroupItem
-                                id="idNameFilterGroup"
                                 name="Name"
                                 label="{i18n>Name}"
                                 groupName="productFiltersGroup"
@@ -44,7 +43,6 @@
                             >
                                 <fb:control>
                                     <Input
-                                        id="idNameFilterGroupField"
                                         name="Name"
                                         placeholder="{i18n>ProductNamePlaceholder}"
                                         showClearIcon="true"
@@ -53,16 +51,14 @@
                             </fb:FilterGroupItem>
 
                             <fb:FilterGroupItem
-                                id="idCategoriesFilterGroup"
-                                name="MainCategory"
-                                label="{i18n>Categories}"
+                                name="Category"
+                                label="{i18n>Category}"
                                 groupName="productFiltersGroup"
                                 visibleInFilterBar="true"
                             >
                                 <fb:control>
                                     <MultiComboBox
-                                        id="idCategoriesFilterGroupField"
-                                        name="MainCategory"
+                                        name="Category"
                                         placeholder="{i18n>CategoryPlaceholder}"
                                         items="{
                                             path: '/Categories',
@@ -77,7 +73,6 @@
                                         }"
                                     >
                                         <core:Item
-                                            id="idCategoriesFilterGroupFieldItem"
                                             key="{ID}"
                                             text="{Name}"
                                         />
@@ -86,7 +81,6 @@
                             </fb:FilterGroupItem>
 
                             <fb:FilterGroupItem
-                                id="idReleaseDateFilterGroup"
                                 name="ReleaseDate"
                                 label="{i18n>ReleaseDate}"
                                 groupName="productFiltersGroup"
@@ -94,7 +88,6 @@
                             >
                                 <fb:control>
                                     <DateRangeSelection
-                                        id="idReleaseDateFilterGroupField"
                                         name="ReleaseDate"
                                         placeholder="{i18n>ReleaseDatePlaceholder}"
                                         maxDate="{productsOverviewView>/MaxReleaseDate}"
@@ -126,11 +119,10 @@
                 <headerToolbar>
                     <OverflowToolbar id="idProductsTableToolbar">
                         <Title
-                            id="idProductsTableTitle"
                             text="{i18n>Products}"
                             level="H2"
                         />
-                        <ToolbarSpacer id="idProductsTableToolbarSpacer" />
+                        <ToolbarSpacer />
                         <Button
                             id="idCreateProductButton"
                             text="{i18n>Create}"
@@ -150,9 +142,7 @@
                             press="onDeleteProductButtonPress"
                             ariaHasPopup="Dialog"
                         />
-                        <ToolbarSeparator
-                            id="idProductsTableToolbarSeparator"
-                        />
+                        <ToolbarSeparator />
                         <Button
                             id="idProductsTableSortButton"
                             tooltip="Sort"
@@ -173,10 +163,7 @@
                     </OverflowToolbar>
                 </headerToolbar>
                 <columns>
-                    <Column
-                        id="idProductsTableNameColumn"
-                        importance="High"
-                    >
+                    <Column importance="High">
                         <Text
                             id="idProductsTableNameColumnText"
                             text="{i18n>Name}"
@@ -184,7 +171,6 @@
                     </Column>
 
                     <Column
-                        id="idProductsTablePriceColumn"
                         importance="High"
                         hAlign="End"
                         width="7rem"
@@ -196,7 +182,6 @@
                     </Column>
 
                     <Column
-                        id="idProductsTableDescriptionColumn"
                         importance="Low"
                         autoPopinWidth="20"
                     >
@@ -207,7 +192,6 @@
                     </Column>
 
                     <Column
-                        id="idProductsTableReleaseDateColumn"
                         importance="Medium"
                         autoPopinWidth="10"
                         width="8rem"
@@ -219,7 +203,6 @@
                     </Column>
 
                     <Column
-                        id="idProductsTableRatingColumn"
                         importance="Medium"
                         autoPopinWidth="10"
                         width="7rem"
@@ -232,17 +215,12 @@
                 </columns>
                 <items>
                     <ColumnListItem
-                        id="idProductsTableItem"
                         type="Navigation"
                         press="onColumnListItemPress"
                         highlight="{= ${DiscountDate} ? 'Success' : 'None'}"
                     >
-                        <ObjectIdentifier
-                            id="idProductsTableItemName"
-                            title="{Name}"
-                        />
+                        <ObjectIdentifier title="{Name}" />
                         <ObjectNumber
-                            id="idProductsTableItemPrice"
                             state="{= ${DiscountDate} ? 'Success' : 'None'}"
                             number="{
                                 parts: ['Price'],
@@ -252,12 +230,10 @@
                             unit="USD"
                         />
                         <Text
-                            id="idProductsTableItemDescription"
                             text="{Description}"
                             wrapping="false"
                         />
                         <Text
-                            id="idProductsTableItemReleaseDate"
                             text="{
                                 path: 'ReleaseDate',
                                 type: 'sap.ui.model.type.Date'
@@ -265,7 +241,6 @@
                             wrapping="false"
                         />
                         <RatingIndicator
-                            id="idProductsTableItemRatingIndicator"
                             value="{Rating}"
                             iconSize="15px"
                             editable="false"
