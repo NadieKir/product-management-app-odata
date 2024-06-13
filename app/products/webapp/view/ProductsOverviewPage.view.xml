@@ -122,6 +122,8 @@
                 sticky="ColumnHeaders"
                 noDataText="{i18n>ProductsNotFound}"
                 selectionChange="onTableSelectionChange"
+                growing="true"
+                growingThreshold="20"
             >
                 <headerToolbar>
                     <OverflowToolbar id="idProductsTableToolbar">
