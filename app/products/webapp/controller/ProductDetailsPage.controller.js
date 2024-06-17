@@ -98,6 +98,13 @@ sap.ui.define(
        * Set page to edit mode.
        */
       setEditMode: function () {
+        const oCurrentDate = new Date();
+        const sProductReleaseDate = this.getProductData("ReleaseDate");
+
+        this.oViewModel.setProperty("/MaxReleaseDate", oCurrentDate);
+        this.oViewModel.setProperty("/MinDiscountDate", sProductReleaseDate);
+        this.oViewModel.setProperty("/MaxDiscountDate", oCurrentDate);
+
         this.oViewModel.setProperty("/IsEditMode", true);
       },
 
@@ -136,6 +143,35 @@ sap.ui.define(
       closeEditProductForm: function () {
         this.oViewModel.setProperty("/IsEditMode", false);
         this.oViewModel.setProperty("/IsProductFormValid", true);
+      },
+      /**
+       * Release date picker change event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onReleaseDatePickerChange: function (oEvent) {
+        const oReleaseDatePickerValue = oEvent.getSource().getDateValue();
+        const oDiscountDatePicker = this.byId("idDiscountDate");
+        const oDiscountDatePickerValue = oDiscountDatePicker.getDateValue();
+
+        this.oViewModel.setProperty("/MinDiscountDate", oReleaseDatePickerValue);
+
+        if (oDiscountDatePickerValue && oReleaseDatePickerValue > oDiscountDatePickerValue) {
+          oDiscountDatePicker.fireValidationError({
+            element: oDiscountDatePicker,
+            property: "value",
+            message: this.getLocalizedString("DiscountDateValidation"),
+          });
+
+          return;
+        }
+
+        if (!oDiscountDatePicker.isValidValue()) {
+          oDiscountDatePicker.fireValidationSuccess({
+            element: oDiscountDatePicker,
+            property: "value",
+          });
+        }
       },
 
       /**

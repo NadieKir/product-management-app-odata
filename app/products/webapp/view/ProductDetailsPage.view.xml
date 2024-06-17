@@ -356,7 +356,7 @@
                                     path: 'ReleaseDate',
                                     type: 'custom.type.RequiredDate'
                                 }"
-                                    maxDate="{SupportData/MaxReleaseDate}"
+                                    maxDate="{productDetailsView>/MaxReleaseDate}"
                                     visible="{productDetailsView>/IsEditMode}"
                                     required="true"
                                     change="onReleaseDatePickerChange"
@@ -380,8 +380,8 @@
                                         path: 'DiscountDate',
                                         type: 'sap.ui.model.type.Date'
                                     }"
-                                    maxDate="{SupportData/MaxDiscountDate}"
-                                    minDate="{SupportData/MinDiscountDate}"
+                                    maxDate="{productDetailsView>/MaxDiscountDate}"
+                                    minDate="{productDetailsView>/MinDiscountDate}"
                                     visible="{productDetailsView>/IsEditMode}"
                                 />
                                 <m:Text
