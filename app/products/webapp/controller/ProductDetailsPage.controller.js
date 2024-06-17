@@ -1,10 +1,11 @@
 sap.ui.define(
   [
+    "sap/m/MessageToast",
     "productmanagement/products/controller/BaseController",
     "sap/ui/model/json/JSONModel",
     "productmanagement/products/model/formatter/formatter",
   ],
-  function (BaseController, JSONModel, formatter) {
+  function (MessageToast, BaseController, JSONModel, formatter) {
     "use strict";
 
     return BaseController.extend("productmanagement.products.controller.ProductDetailsPage", {
@@ -38,6 +39,21 @@ sap.ui.define(
       },
 
       /**
+       * Set productDetailsView model to default state.
+       */
+      setDefaultViewModel: function () {
+        const oDefaultProductDetailsViewModel = new JSONModel({
+          IsCreateMode: false,
+          IsEditMode: false,
+          IsProductFormValid: true,
+        });
+
+        this.getView().setModel(oDefaultProductDetailsViewModel, "productDetailsView");
+
+        this.oViewModel = this.getModel("productDetailsView");
+      },
+
+      /**
        * Bind product with sProductId id to view.
        *
        * @param {string} sProductId - Product id.
@@ -51,7 +67,6 @@ sap.ui.define(
         const sProductKey = oDataModel.createKey("/Products", { ID: sProductId });
 
         const fDataRequestedHandler = () => {
-          oView.setBusyIndicatorDelay(0);
           oView.setBusy(true);
         };
 
@@ -64,7 +79,6 @@ sap.ui.define(
             return;
           }
 
-          this.setProductSubcategoriesText(oReceivedProduct);
           oView.setBusy(false);
         };
 
@@ -81,47 +95,6 @@ sap.ui.define(
       },
 
       /**
-       * Set product subcategories separated by comma to text control.
-       *
-       * @param {Object} sProductId - Product id.
-       */
-      setProductSubcategoriesText: function (oProduct) {
-        const aSubcategoriesNames = oProduct.Subcategories.map((oCategory) => oCategory.Subcategory.Name);
-
-        this.byId("idProductSubcategoriesText").setText(aSubcategoriesNames.join(", "));
-      },
-
-      /**
-       * Set productDetailsView model to default state.
-       */
-      setDefaultViewModel: function () {
-        const oDefaultProductDetailsViewModel = new JSONModel({
-          IsCreateMode: false,
-          IsEditMode: false,
-          IsProductFormValid: true,
-        });
-
-        this.getView().setModel(oDefaultProductDetailsViewModel, "productDetailsView");
-
-        this.oViewModel = this.getModel("productDetailsView");
-      },
-
-      /**
-       * Cancel product editing button press event handler.
-       */
-      onCancelProductEditingButtonPress: function () {
-        this.closeEditProductForm();
-      },
-
-      /**
-       * Reset edit mode and close edit product form.
-       */
-      closeEditProductForm: function () {
-        this.oViewModel.setProperty("/IsEditMode", false);
-        this.oViewModel.setProperty("/IsProductFormValid", true);
-      },
-
-      /**
        * Set page to edit mode.
        */
       setEditMode: function () {
@@ -132,7 +105,37 @@ sap.ui.define(
        * Save product button press event handler.
        */
       onSaveProductButtonPress: function () {
+        const oDataModel = this.getModel();
+
+        oDataModel.submitChanges({
+          success: function () {
+            MessageToast.show(this.getLocalizedString("SaveProductSuccess"));
+          },
+          error: function () {
+            MessageToast.show(this.getLocalizedString("SaveProductError"));
+          },
+        });
+
         this.closeEditProductForm();
+      },
+
+      /**
+       * Cancel product editing button press event handler.
+       */
+      onCancelProductEditingButtonPress: function () {
+        const oDataModel = this.getModel();
+
+        oDataModel.resetChanges();
+
+        this.closeEditProductForm();
+      },
+
+      /**
+       * Reset edit mode and close edit product form.
+       */
+      closeEditProductForm: function () {
+        this.oViewModel.setProperty("/IsEditMode", false);
+        this.oViewModel.setProperty("/IsProductFormValid", true);
       },
 
       /**
@@ -154,6 +157,19 @@ sap.ui.define(
         const isFieldGroupValid = this.isFieldGroupValid("ProductDataField");
 
         this.oViewModel.setProperty("/IsProductFormValid", isFieldGroupValid);
+      },
+
+      /**
+       * Get current product data or a specific property value (if sProperty is defined).
+       *
+       * @param {string} [sProperty] - Property which value should be returned.
+       *
+       * @returns {*} - Product JSON model.
+       */
+      getProductData: function (sProperty) {
+        const oProduct = this.getView().getBindingContext()?.getObject();
+
+        return sProperty ? oProduct && oProduct[sProperty] : oProduct;
       },
     });
   }

@@ -62,6 +62,23 @@ sap.ui.define(
 
         return nAmountOfDays <= nAmountOfDaysToBeNew;
       },
+
+      /**
+       * Get concatenated product subcategories values.
+       *
+       * @param {Array} aSubcategoriesPaths - Array of subcategories paths to concatenate.
+       *
+       * @returns {string} - Concatenated subcategories.
+       */
+      joinSubcategoriesFormatter: function (aSubcategoriesPaths) {
+        if (!Array.isArray(aSubcategoriesPaths)) return "";
+
+        const aSubcategoriesNames = aSubcategoriesPaths.map((sPath) =>
+          this.getModel().getProperty(`/${sPath}/Subcategory/Name`)
+        );
+
+        return aSubcategoriesNames.join(", ");
+      },
     };
 
     return formatter;
