@@ -6,9 +6,11 @@ sap.ui.define(
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
+    "sap/ui/model/Sorter",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
     "productmanagement/products/model/formatter/formatter",
+    "productmanagement/products/constant/constant",
   ],
   function (
     BaseController,
@@ -17,11 +19,15 @@ sap.ui.define(
     JSONModel,
     Filter,
     FilterOperator,
+    Sorter,
     MessageBox,
     MessageToast,
-    formatter
+    formatter,
+    constant
   ) {
     "use strict";
+
+    const { DEFAULT_PRODUCTS_SORTER, SORT_DIALOG_NAME, GROUP_DIALOG_NAME } = constant;
 
     return BaseController.extend("productmanagement.products.controller.ProductsOverviewPage", {
       formatter,
@@ -42,6 +48,13 @@ sap.ui.define(
         oView.setModel(oProductsOverviewViewModel, "productsOverviewView");
 
         this.oViewModel = oView.getModel("productsOverviewView");
+      },
+
+      /**
+       * Controller's "before rendering" lifecycle method.
+       */
+      onBeforeRendering: function () {
+        this.setProductsTableSorter(DEFAULT_PRODUCTS_SORTER.PATH, DEFAULT_PRODUCTS_SORTER.DESCENDING);
       },
 
       /**
@@ -221,6 +234,22 @@ sap.ui.define(
       },
 
       /**
+       * Set products table sorter.
+       *
+       * @param {string} sPath - Property path to sort by.
+       * @param {boolean} bIsDescending - Whether sorting should be applied in descending order.
+       */
+      setProductsTableSorter: function (sPath, bIsDescending) {
+        const oTableBinding = this.byId("idProductsTable").getBinding("items");
+        const oGrouping = this.oViewModel.getProperty("/grouping") || null;
+        const oSorter = new Sorter(sPath, bIsDescending);
+
+        oTableBinding.sort(oGrouping ? [oGrouping, oSorter] : oSorter);
+
+        this.oViewModel.setProperty("/sorter", oSorter);
+      },
+
+      /**
        * Update products table selections.
        */
       updateProductsTableSelections: function () {
@@ -239,6 +268,28 @@ sap.ui.define(
 
           oProductsTable.setSelectedItem(oProductToMarkSelected);
         });
+      },
+
+      /**
+       * @async
+       *
+       * Products sort button press event handler.
+       */
+      onSortButtonPressed: async function () {
+        const oSortDialog = await this.getDialog(SORT_DIALOG_NAME);
+
+        oSortDialog.open();
+      },
+
+      /**
+       * @async
+       *
+       * Products group button press event handler.
+       */
+      onGroupButtonPressed: async function () {
+        const oGroupDialog = await this.getDialog(GROUP_DIALOG_NAME);
+
+        oGroupDialog.open();
       },
     });
   }

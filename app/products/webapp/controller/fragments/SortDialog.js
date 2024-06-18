@@ -1,5 +1,7 @@
-sap.ui.define([], function () {
+sap.ui.define(["productmanagement/products/constant/constant"], function (constant) {
   "use strict";
+
+  const { SORT_DIALOG_NAME } = constant;
 
   return {
     /**
