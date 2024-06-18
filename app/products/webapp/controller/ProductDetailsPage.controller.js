@@ -1,11 +1,13 @@
 sap.ui.define(
   [
-    "sap/m/MessageToast",
     "productmanagement/products/controller/BaseController",
     "sap/ui/model/json/JSONModel",
+    "sap/m/MessageToast",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
     "productmanagement/products/model/formatter/formatter",
   ],
-  function (MessageToast, BaseController, JSONModel, formatter) {
+  function (BaseController, JSONModel, MessageToast, Filter, FilterOperator, formatter) {
     "use strict";
 
     return BaseController.extend("productmanagement.products.controller.ProductDetailsPage", {
@@ -102,6 +104,9 @@ sap.ui.define(
       setEditMode: function () {
         const oCurrentDate = new Date();
         const sProductReleaseDate = this.getProductData("ReleaseDate");
+        const sProductCategoryId = this.getProductData("Category_ID");
+
+        this.setSubcategoriesMultiComboBoxItems(sProductCategoryId);
 
         this.oViewModel.setProperty("/MaxReleaseDate", oCurrentDate);
         this.oViewModel.setProperty("/MinDiscountDate", sProductReleaseDate);
@@ -114,6 +119,15 @@ sap.ui.define(
        * Save product button press event handler.
        */
       onSaveProductButtonPress: function () {
+        const aProductDataFields = this.getView().getControlsByFieldGroupId("ProductDataField");
+        const bAreProductDataRequiredFieldsFilled = this.validateRequiredFieldsToBeFilled(aProductDataFields);
+
+        if (!bAreProductDataRequiredFieldsFilled) {
+          this.oViewModel.setProperty("/IsProductFormValid", false);
+
+          return;
+        }
+
         const oDataModel = this.getModel();
 
         this.updateProductSubcategories();
@@ -143,6 +157,30 @@ sap.ui.define(
         const oProductContext = oSelect.getBindingContext();
 
         oProductContext.getModel().setProperty("Category_ID", sSelectedCategoryId, oProductContext);
+
+        this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
+        this.clearSubcategoriesMultiComboBoxSelectedItems();
+      },
+
+      /**
+       * Set subcategories of given category to items aggregation of subcategories MultiComboBox.
+       *
+       * @param {string} sCategoryId - Сategory id.
+       */
+      setSubcategoriesMultiComboBoxItems: function (sCategoryId) {
+        const aSubcategoriesMultiComboBox = this.byId("idProductSubcategoriesMultiComboBox");
+        const oFilter = new Filter("SubcategoryFor_ID", FilterOperator.EQ, sCategoryId);
+
+        aSubcategoriesMultiComboBox.getBinding("items").filter(oFilter);
+      },
+
+      /**
+       * Clear subcategories MultiComboBox selected items.
+       */
+      clearSubcategoriesMultiComboBoxSelectedItems: function () {
+        const aSubcategoriesMultiComboBox = this.byId("idProductSubcategoriesMultiComboBox");
+
+        aSubcategoriesMultiComboBox.setSelectedItems([]);
       },
 
       /**

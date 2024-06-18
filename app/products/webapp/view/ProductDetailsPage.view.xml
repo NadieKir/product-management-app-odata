@@ -302,14 +302,7 @@
                                     placeholder="{i18n>SubcategoriesPlaceholder}"
                                     items="{
                                         path: '/Categories',
-                                        sorter: { path: 'Name' },
-                                        filters: [
-                                            {
-                                                path: 'SubcategoryFor_ID',
-                                                operator: 'NE',
-                                                value1: null
-                                            }
-                                        ]
+                                        sorter: { path: 'Name' }
                                     }"
                                     selectedKeys="{
                                         parts: [{ path: 'Subcategories' }, { value: 'ID' }],                                 
