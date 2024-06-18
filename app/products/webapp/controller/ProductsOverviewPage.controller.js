@@ -68,6 +68,20 @@ sap.ui.define(
       },
 
       /**
+       * Product list item press event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onColumnListItemPress: function (oEvent) {
+        const oSource = oEvent.getSource();
+        const sProductId = oSource.getBindingContext().getProperty("ID");
+
+        this.getRouter().navTo("ProductDetailsPage", {
+          productId: sProductId,
+        });
+      },
+
+      /**
        * Delete product button press event handler.
        */
       onDeleteProductButtonPress: function () {
