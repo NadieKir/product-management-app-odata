@@ -322,6 +322,7 @@
                                         parts: [{ path: 'Subcategories' }, { value: 'Name' }, { value: 'true' }],                                 
                                         formatter: '.formatter.getSubcategoriesFormatter'
                                     }"
+                                    emptyIndicatorMode='On'
                                     visible="{= !${productDetailsView>/IsEditMode}}"
                                 />
                             </l:VerticalLayout>
