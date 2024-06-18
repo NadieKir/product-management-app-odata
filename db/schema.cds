@@ -8,6 +8,7 @@ using {
 
 entity Categories : cuid {
         Name : String;
+        SubcategoryFor: Association to Categories;
 }
 
 entity Suppliers : cuid {
@@ -44,6 +45,7 @@ entity Products : cuid  {
         DiscountDate : Date;
         Price        : Decimal;
         Image        : String;
+        MainCategory : Association to Categories;
         Categories   : Association to many ProductsCategories
                                on Categories.Product = $self;
         Suppliers    : Association to many ProductsSuppliers
