@@ -2,7 +2,7 @@ sap.ui.define([], () => {
   "use strict";
 
   const DEFAULT_PRODUCTS_SORTER = {
-    PATH: "Name",
+    PATH: undefined,
     DESCENDING: false,
   };
 

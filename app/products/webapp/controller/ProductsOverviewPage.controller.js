@@ -256,7 +256,7 @@ sap.ui.define(
       setProductsTableSorter: function (sPath, bIsDescending) {
         const oTableBinding = this.byId("idProductsTable").getBinding("items");
         const oGrouping = this.oViewModel.getProperty("/grouping") || null;
-        const oSorter = new Sorter(sPath, bIsDescending);
+        const oSorter = sPath ? new Sorter(sPath, bIsDescending) : null;
 
         oTableBinding.sort(oGrouping ? [oGrouping, oSorter] : oSorter);
 

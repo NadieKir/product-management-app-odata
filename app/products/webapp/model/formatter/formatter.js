@@ -29,7 +29,7 @@ sap.ui.define(
       sortButtonStyleFormatter: function (oSorter) {
         const { PATH, DESCENDING } = DEFAULT_PRODUCTS_SORTER;
 
-        if (oSorter?.sPath === PATH && oSorter?.bDescending === DESCENDING) {
+        if (!oSorter || (oSorter?.sPath === PATH && oSorter?.bDescending === DESCENDING)) {
           return "Default";
         }
 
