@@ -36,6 +36,8 @@ sap.ui.define(
         }
 
         this.bindProductToView(sProductId);
+
+        this.sProductId = sProductId;
       },
 
       /**
@@ -114,16 +116,87 @@ sap.ui.define(
       onSaveProductButtonPress: function () {
         const oDataModel = this.getModel();
 
+        this.updateProductSubcategories();
+
         oDataModel.submitChanges({
-          success: function () {
+          success: () => {
             MessageToast.show(this.getLocalizedString("SaveProductSuccess"));
           },
-          error: function () {
+          error: () => {
             MessageToast.show(this.getLocalizedString("SaveProductError"));
           },
         });
 
+        oDataModel.refresh(true);
+
         this.closeEditProductForm();
+      },
+
+      /**
+       * Category select change event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onCategorySelectChange: function (oEvent) {
+        const oSelect = oEvent.getSource();
+        const sSelectedCategoryId = oSelect.getSelectedKey();
+        const oProductContext = oSelect.getBindingContext();
+
+        oProductContext.getModel().setProperty("Category_ID", sSelectedCategoryId, oProductContext);
+      },
+
+      /**
+       * Update product subcategories.
+       */
+      updateProductSubcategories: function () {
+        const aSelectedSubcategoriesIds = this.byId("idProductSubcategoriesMultiComboBox").getSelectedKeys();
+        const aProductSubcategoriesIds = this.getProductData("Subcategories", "/ID");
+
+        const aSubcategoriesToAdd = aSelectedSubcategoriesIds.filter(
+          (sSubcategoryId) => !aProductSubcategoriesIds.includes(sSubcategoryId)
+        );
+
+        const aSubcategoriesToRemove = this.getProductData("Subcategories").filter((sSubcategoryPath) => {
+          const sId = this.getModel().getProperty("/" + sSubcategoryPath + "/Subcategory/ID");
+
+          return !aSelectedSubcategoriesIds.includes(sId);
+        });
+
+        aSubcategoriesToAdd.length && this.addSubcategories(aSubcategoriesToAdd);
+        aSubcategoriesToRemove.length && this.removeSubcategories(aSubcategoriesToRemove);
+      },
+
+      /**
+       * Add subcategories to product.
+       *
+       * @param {string[]} aSubcategoriesToAdd - Ids of subcategories to add to current product.
+       */
+      addSubcategories: function (aSubcategoriesToAdd) {
+        const oDataModel = this.getModel();
+
+        aSubcategoriesToAdd.forEach((sSubcategoryId) => {
+          const oEntry = {
+            Product_ID: this.sProductId,
+            Subcategory_ID: sSubcategoryId,
+          };
+
+          oDataModel.createEntry("/ProductsSubcategories", {
+            properties: oEntry,
+          });
+        });
+      },
+
+      /**
+       * Remove subcategories from product.
+       *
+       * @param {string[]} aSubcategoriesToAdd - Ids of subcategories to remove from current product.
+       */
+      removeSubcategories: function (aSubcategoriesToRemove) {
+        const oDataModel = this.getModel();
+
+        aSubcategoriesToRemove.forEach((sPath) => {
+          oDataModel.remove("/" + sPath);
+        });
       },
 
       /**
@@ -144,6 +217,7 @@ sap.ui.define(
         this.oViewModel.setProperty("/IsEditMode", false);
         this.oViewModel.setProperty("/IsProductFormValid", true);
       },
+
       /**
        * Release date picker change event handler.
        *
@@ -199,13 +273,30 @@ sap.ui.define(
        * Get current product data or a specific property value (if sProperty is defined).
        *
        * @param {string} [sProperty] - Property which value should be returned.
+       * @param {string} [sInnerProperty] - Inner property which value should be returned.
        *
-       * @returns {*} - Product JSON model.
+       * @returns {*} - Product full data or specified property.
        */
-      getProductData: function (sProperty) {
-        const oProduct = this.getView().getBindingContext()?.getObject();
+      getProductData: function (sProperty, sInnerProperty) {
+        const sPath = sProperty
+          ? `/Products(guid'${this.sProductId}')/${sProperty}`
+          : `/Products(guid'${this.sProductId}')`;
 
-        return sProperty ? oProduct && oProduct[sProperty] : oProduct;
+        const vData = this.getModel().getProperty(sPath);
+
+        if (!sInnerProperty) {
+          return vData;
+        }
+
+        switch (sProperty) {
+          case "Subcategories":
+            return vData.map((sPath) =>
+              this.getModel().getProperty(`/${sPath}/Subcategory${sInnerProperty}`)
+            );
+
+          default:
+            return vData;
+        }
       },
     });
   }

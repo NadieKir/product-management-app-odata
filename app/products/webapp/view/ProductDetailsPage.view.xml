@@ -235,10 +235,10 @@
                                     fieldGroupIds="ProductDataField,Price"
                                     placeholder="{i18n>PricePlaceholder}"
                                     value="{
-                                    path : 'Price',
-                                    type : 'sap.ui.model.type.Float',
-                                    formatOptions: { groupingSeparator: '', decimals: 0, decimalSeparator: '.' }
-                                }"
+                                        path : 'Price',
+                                        type : 'sap.ui.model.type.Float',
+                                        formatOptions: { groupingSeparator: '', decimals: 0, decimalSeparator: '.' }
+                                    }"
                                     textAlign="Right"
                                     description="USD"
                                     visible="{productDetailsView>/IsEditMode}"
@@ -259,24 +259,31 @@
                                 required="{productDetailsView>/IsEditMode}"
                             />
                             <l:VerticalLayout>
-                                <m:MultiComboBox
-                                    name="Subcategories"
-                                    fieldGroupIds="ProductDataField,Subcategories"
-                                    placeholder="{i18n>CategoryPlaceholder}"
+                                <m:Select
+                                    id="idProductCategorySelect"
+                                    name="Category"
+                                    fieldGroupIds="ProductDataField,Category"
                                     items="{
-                                        path: 'categories>/',
-                                        sorter: { path: 'Name' }
+                                        path: '/Categories',
+                                        sorter: { path: 'Name' },
+                                        filters: [
+                                            {
+                                                path: 'SubcategoryFor_ID',
+                                                operator: 'EQ',
+                                                value1: null
+                                            }
+                                        ]
                                     }"
-                                    selectedKeys="{Subcategories}"
+                                    change="onCategorySelectChange"
+                                    selectedKey="{Category/ID}"
                                     visible="{productDetailsView>/IsEditMode}"
-                                    selectionChange="validateRequiredMultiComboBox"
                                     required="true"
                                 >
                                     <core:Item
-                                        key="{categories>Id}"
-                                        text="{categories>Name}"
+                                        key="{ID}"
+                                        text="{Name}"
                                     />
-                                </m:MultiComboBox>
+                                </m:Select>
                                 <m:Text
                                     text="{Category/Name}"
                                     visible="{= !${productDetailsView>/IsEditMode}}"
@@ -289,27 +296,38 @@
                             />
                             <l:VerticalLayout>
                                 <m:MultiComboBox
+                                    id="idProductSubcategoriesMultiComboBox"
                                     name="Subcategories"
                                     fieldGroupIds="ProductDataField,Subcategories"
-                                    placeholder="{i18n>CategoryPlaceholder}"
+                                    placeholder="{i18n>SubcategoriesPlaceholder}"
                                     items="{
-                                        path: 'categories>/',
-                                        sorter: { path: 'Name' }
+                                        path: '/Categories',
+                                        sorter: { path: 'Name' },
+                                        filters: [
+                                            {
+                                                path: 'SubcategoryFor_ID',
+                                                operator: 'NE',
+                                                value1: null
+                                            }
+                                        ]
                                     }"
-                                    selectedKeys="{Subcategories}"
+                                    selectedKeys="{
+                                        parts: [{ path: 'Subcategories' }, { value: 'ID' }],                                 
+                                        formatter: '.formatter.getSubcategoriesFormatter'
+                                    }"
                                     visible="{productDetailsView>/IsEditMode}"
                                     selectionChange="validateRequiredMultiComboBox"
                                     required="true"
                                 >
                                     <core:Item
-                                        key="{categories>Id}"
-                                        text="{categories>Name}"
+                                        key="{ID}"
+                                        text="{Name}"
                                     />
                                 </m:MultiComboBox>
                                 <m:Text
-                                    text="{
-                                        path: 'Subcategories',                                       
-                                        formatter: '.formatter.joinSubcategoriesFormatter'
+                                    text="{ 
+                                        parts: [{ path: 'Subcategories' }, { value: 'Name' }, { value: 'true' }],                                 
+                                        formatter: '.formatter.getSubcategoriesFormatter'
                                     }"
                                     visible="{= !${productDetailsView>/IsEditMode}}"
                                 />
@@ -353,9 +371,9 @@
                                     name="ReleaseDate"
                                     fieldGroupIds="ProductDataField,ReleaseDate"
                                     value="{
-                                    path: 'ReleaseDate',
-                                    type: 'custom.type.RequiredDate'
-                                }"
+                                        path: 'ReleaseDate',
+                                        type: 'custom.type.RequiredDate'
+                                    }"
                                     maxDate="{productDetailsView>/MaxReleaseDate}"
                                     visible="{productDetailsView>/IsEditMode}"
                                     required="true"
