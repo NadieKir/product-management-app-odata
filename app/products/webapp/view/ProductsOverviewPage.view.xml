@@ -110,12 +110,7 @@
         <f:content>
             <Table
                 id="idProductsTable"
-                items="{
-                    path: '/Products',
-                    parameters: {
-                      operationMode: 'Client'
-                    }
-                  }"
+                items="{/Products}"
                 mode="MultiSelect"
                 multiSelectMode="ClearAll"
                 autoPopinMode="true"
