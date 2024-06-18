@@ -179,10 +179,14 @@ sap.ui.define(
               break;
 
             case "MainCategory":
+              const aMainCategoryFilters = vFilterFieldValue.map(
+                (sCategory) => new Filter(sFilterName + "_ID", FilterOperator.EQ, sCategory)
+              );
+
               aFilters.push(
                 new Filter({
-                  path: sFilterName + "_ID",
-                  test: (aValue) => vFilterFieldValue.includes(aValue),
+                  filters: aMainCategoryFilters,
+                  and: false,
                 })
               );
 

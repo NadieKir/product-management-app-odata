@@ -110,18 +110,15 @@
         <f:content>
             <Table
                 id="idProductsTable"
-                items="{
-                    path: '/Products',
-                    parameters: {
-                      operationMode: 'Client'
-                    }
-                  }"
+                items="{/Products}"
                 mode="MultiSelect"
                 multiSelectMode="ClearAll"
                 autoPopinMode="true"
                 sticky="ColumnHeaders"
                 noDataText="{i18n>ProductsNotFound}"
                 selectionChange="onTableSelectionChange"
+                growing="true"
+                growingThreshold="20"
             >
                 <headerToolbar>
                     <OverflowToolbar id="idProductsTableToolbar">
