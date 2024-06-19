@@ -106,6 +106,7 @@ sap.ui.define(
         const sProductReleaseDate = this.getProductData("ReleaseDate");
         const sProductCategoryId = this.getProductData("Category_ID");
 
+        this.setCategorySelectSelectedItem(sProductCategoryId);
         this.setSubcategoriesMultiComboBoxItems(sProductCategoryId);
 
         this.oViewModel.setProperty("/MaxReleaseDate", oCurrentDate);
@@ -158,8 +159,19 @@ sap.ui.define(
 
         oProductContext.getModel().setProperty("Category_ID", sSelectedCategoryId, oProductContext);
 
-        this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
         this.clearSubcategoriesMultiComboBoxSelectedItems();
+        this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
+      },
+
+      /**
+       * Select given category in category Select.
+       *
+       * @param {string} sCategoryId - Сategory id.
+       */
+      setCategorySelectSelectedItem: function (sCategoryId) {
+        const oCategorySelect = this.byId("idProductCategorySelect");
+
+        oCategorySelect.setSelectedKey(sCategoryId);
       },
 
       /**
