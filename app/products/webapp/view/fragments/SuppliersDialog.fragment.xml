@@ -1,0 +1,20 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <SelectDialog
+        id="idSelectSupplierDialog"
+        title="{i18n>Suppliers}"
+        items="{
+            path: '/Suppliers',
+            sorter: { path: 'Name' }
+        }"
+        search="onSuppliersDialogSearch"
+        confirm="onSuppliersDialogConfirm"
+    >
+        <StandardListItem
+            title="{Name}"
+            description="{Country}"
+        />
+    </SelectDialog>
+</core:FragmentDefinition>

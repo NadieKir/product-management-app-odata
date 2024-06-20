@@ -10,7 +10,6 @@ sap.ui.define([], () => {
   const SORT_DIALOG_NAME = FRAGMENTS_PATH + "SortDialog";
   const GROUP_DIALOG_NAME = FRAGMENTS_PATH + "GroupDialog";
   const SUPPLIERS_DIALOG_NAME = FRAGMENTS_PATH + "SuppliersDialog";
-  const NEW_SUPPLIER_LIST_ITEM_FRAGMENT_NAME = FRAGMENTS_PATH + "AddSupplierColumnListItem";
 
   const AMOUNT_OF_DAYS_TO_BE_NEW = 7;
 
@@ -21,7 +20,6 @@ sap.ui.define([], () => {
     SORT_DIALOG_NAME,
     GROUP_DIALOG_NAME,
     SUPPLIERS_DIALOG_NAME,
-    NEW_SUPPLIER_LIST_ITEM_FRAGMENT_NAME,
     AMOUNT_OF_DAYS_TO_BE_NEW,
     ONE_DAY_IN_MS,
   };

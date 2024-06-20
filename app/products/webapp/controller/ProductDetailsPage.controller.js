@@ -1,17 +1,34 @@
 sap.ui.define(
   [
     "productmanagement/products/controller/BaseController",
+    "productmanagement/products/controller/fragments/SuppliersDialog",
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "productmanagement/products/model/formatter/formatter",
+    "productmanagement/products/constant/constant",
+    "productmanagement/products/api/countriesService",
   ],
-  function (BaseController, JSONModel, MessageToast, Filter, FilterOperator, formatter) {
+  function (
+    BaseController,
+    SuppliersDialog,
+    JSONModel,
+    MessageToast,
+    Filter,
+    FilterOperator,
+    formatter,
+    constant,
+    countriesService
+  ) {
     "use strict";
+
+    const { SUPPLIERS_DIALOG_NAME } = constant;
 
     return BaseController.extend("productmanagement.products.controller.ProductDetailsPage", {
       formatter,
+
+      ...SuppliersDialog,
 
       /**
        * Controller's "init" lifecycle method.
@@ -83,19 +100,32 @@ sap.ui.define(
             return;
           }
 
+          this.setProductSuppliersTableItems(sProductId);
+
           oView.setBusy(false);
         };
 
         oView.bindObject({
           path: sProductKey,
           parameters: {
-            expand: "Category,Subcategories/Subcategory",
+            expand: "Category,Subcategories/Subcategory,Suppliers/Supplier",
           },
           events: {
             dataRequested: fDataRequestedHandler,
             dataReceived: fDataReceivedHandler,
           },
         });
+      },
+
+      /**
+       * Set current product suppliers to suppliers table.
+       *
+       * @param {string} sProductId - Product id.
+       */
+      setProductSuppliersTableItems: function (sProductId) {
+        const oFilter = new Filter("Product_ID", FilterOperator.EQ, sProductId);
+
+        this.byId("idSuppliersTable").getBinding("items").filter(oFilter);
       },
 
       /**
@@ -287,6 +317,32 @@ sap.ui.define(
       },
 
       /**
+       * Add supplier button press event handler.
+       */
+      onAddSupplierButtonPress: async function () {
+        const oSuppliersDialog = await this.getDialog(SUPPLIERS_DIALOG_NAME);
+        const aSuppliersDialogItems = oSuppliersDialog.getBinding("items");
+
+        const aProductSuppliers = this.byId("idSuppliersTable").getItems();
+        const aProductSuppliersIds = aProductSuppliers.map((oSupplier) =>
+          oSupplier.getBindingContext().getProperty("Supplier_ID")
+        );
+
+        const aFilters = aProductSuppliersIds.map(
+          (sProductSupplierId) => new Filter("ID", FilterOperator.NE, sProductSupplierId)
+        );
+
+        aSuppliersDialogItems.filter(
+          new Filter({
+            filters: aFilters,
+            and: true,
+          })
+        );
+
+        oSuppliersDialog.open();
+      },
+
+      /**
        * Delete product button press event handler.
        */
       onDeleteProductButtonPress: function () {},
@@ -316,10 +372,8 @@ sap.ui.define(
        * @returns {*} - Product full data or specified property.
        */
       getProductData: function (sProperty, sInnerProperty) {
-        const sPath = sProperty
-          ? `/Products(guid'${this.sProductId}')/${sProperty}`
-          : `/Products(guid'${this.sProductId}')`;
-
+        const sProductPath = this.getView().getBindingContext().getPath();
+        const sPath = sProperty ? `${sProductPath}/${sProperty}` : sProductPath;
         const vData = this.getModel().getProperty(sPath);
 
         if (!sInnerProperty) {
@@ -331,6 +385,9 @@ sap.ui.define(
             return vData.map((sPath) =>
               this.getModel().getProperty(`/${sPath}/Subcategory${sInnerProperty}`)
             );
+
+          case "Suppliers":
+            return vData.map((sPath) => this.getModel().getProperty(`/${sPath}/Supplier${sInnerProperty}`));
 
           default:
             return vData;

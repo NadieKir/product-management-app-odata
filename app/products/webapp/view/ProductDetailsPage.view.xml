@@ -431,7 +431,86 @@
                 titleUppercase="false"
             >
                 <ObjectPageSubSection>
-                    <m:Text text="Suppliers" />
+                    <m:Table
+                        id="idSuppliersTable"
+                        items="{/ProductsSuppliers}"
+                        autoPopinMode="true"
+                        fixedLayout="false"
+                        sticky="HeaderToolbar,ColumnHeaders"
+                        noDataText='{i18n>ProductSuppliersNoDataText}'
+                    >
+                        <m:headerToolbar>
+                            <m:OverflowToolbar
+                                visible="{productDetailsView>/IsEditMode}"
+                            >
+                                <m:ToolbarSpacer />
+                                <m:Button
+                                    id="idAddSupplierButton"
+                                    text="{i18n>Add}"
+                                    type="Emphasized"
+                                    icon="sap-icon://add"
+                                    press="onAddSupplierButtonPress"
+                                />
+                            </m:OverflowToolbar>
+                        </m:headerToolbar>
+                        <m:columns>
+                            <m:Column importance="High">
+                                <m:Text text="{i18n>Name}" />
+                            </m:Column>
+                            <m:Column
+                                importance="Medium"
+                                autoPopinWidth="12"
+                            >
+                                <m:Text text="{i18n>Country}" />
+                            </m:Column>
+                            <m:Column
+                                importance="Low"
+                                autoPopinWidth="12"
+                            >
+                                <m:Text text="{i18n>State}" />
+                            </m:Column>
+                            <m:Column
+                                importance="Medium"
+                                autoPopinWidth="12"
+                            >
+                                <m:Text text="{i18n>City}" />
+                            </m:Column>
+                            <m:Column
+                                importance="Low"
+                                autoPopinWidth="12"
+                            >
+                                <m:Text text="{i18n>Street}" />
+                            </m:Column>
+                            <m:Column
+                                importance="Low"
+                                autoPopinWidth="12"
+                            >
+                                <m:Text text="{i18n>ZipCode}" />
+                            </m:Column>
+                            <m:Column
+                                importance="High"
+                                visible="{productDetailsView>/IsEditMode}"
+                            />
+                        </m:columns>
+                        <m:items>
+                            <m:ColumnListItem vAlign="Middle">
+                                <m:Text text="{Supplier/Name}" />
+                                <m:Text text="{Supplier/Country}" />
+                                <m:Text text="{Supplier/State}" />
+                                <m:Text text="{Supplier/City}" />
+                                <m:Text text="{Supplier/Street}" />
+                                <m:Text text="{Supplier/ZipCode}" />
+                                <m:HBox justifyContent="End">
+                                    <m:Button
+                                        type="Transparent"
+                                        icon="sap-icon://sys-cancel"
+                                        tooltip="{i18n>Delete}"
+                                        press="onDeleteSupplierButtonPress"
+                                    />
+                                </m:HBox>
+                            </m:ColumnListItem>
+                        </m:items>
+                    </m:Table>
                 </ObjectPageSubSection>
             </ObjectPageSection>
 
