@@ -27,9 +27,9 @@ entity Comments : cuid {
         Date    : String;
 }
 
-entity ProductsCategories : cuid {
+entity ProductsSubcategories : cuid {
         Product  : Association to Products;
-        Category : Association to Categories;
+        Subcategory : Association to Categories;
 }
 
 entity ProductsSuppliers : cuid {
@@ -45,9 +45,9 @@ entity Products : cuid  {
         DiscountDate : Date;
         Price        : Decimal;
         Image        : String;
-        MainCategory : Association to Categories;
-        Categories   : Association to many ProductsCategories
-                               on Categories.Product = $self;
+        Category : Association to Categories;
+        Subcategories   : Association to many ProductsSubcategories
+                               on Subcategories.Product = $self;
         Suppliers    : Association to many ProductsSuppliers
                                on Suppliers.Product = $self;
         Comments     : Association to many Comments

@@ -2,9 +2,12 @@ sap.ui.define(
   [
     "productmanagement/products/controller/BaseController",
     "sap/ui/model/json/JSONModel",
+    "sap/m/MessageToast",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
     "productmanagement/products/model/formatter/formatter",
   ],
-  function (BaseController, JSONModel, formatter) {
+  function (BaseController, JSONModel, MessageToast, Filter, FilterOperator, formatter) {
     "use strict";
 
     return BaseController.extend("productmanagement.products.controller.ProductDetailsPage", {
@@ -35,40 +38,8 @@ sap.ui.define(
         }
 
         this.bindProductToView(sProductId);
-      },
 
-      /**
-       * Bind product with sProductId id to view.
-       *
-       * @param {string} sProductId - Product id.
-       */
-      bindProductToView: async function (sProductId) {
-        const oView = this.getView();
-        const oDataModel = oView.getModel();
-
-        await oDataModel.metadataLoaded();
-
-        const sProductKey = oDataModel.createKey("/Products", { ID: sProductId });
-
-        const fDataRequestedHandler = () => oView.setBusy(true);
-
-        const fDataReceivedHandler = (oData) => {
-          const oReceivedProduct = oData.getParameter("data");
-
-          if (!oReceivedProduct) {
-            this.getRouter().getTargets().display("notFoundPage");
-          }
-
-          oView.setBusy(false);
-        };
-
-        oView.bindObject({
-          path: sProductKey,
-          events: {
-            dataRequested: fDataRequestedHandler,
-            dataReceived: fDataReceivedHandler,
-          },
-        });
+        this.sProductId = sProductId;
       },
 
       /**
@@ -87,9 +58,188 @@ sap.ui.define(
       },
 
       /**
+       * Bind product with sProductId id to view.
+       *
+       * @param {string} sProductId - Product id.
+       */
+      bindProductToView: async function (sProductId) {
+        const oView = this.getView();
+        const oDataModel = oView.getModel();
+
+        await oDataModel.metadataLoaded();
+
+        const sProductKey = oDataModel.createKey("/Products", { ID: sProductId });
+
+        const fDataRequestedHandler = () => {
+          oView.setBusy(true);
+        };
+
+        const fDataReceivedHandler = (oData) => {
+          const oReceivedProduct = oData.getParameter("data");
+
+          if (!oReceivedProduct) {
+            this.getRouter().getTargets().display("notFoundPage");
+
+            return;
+          }
+
+          oView.setBusy(false);
+        };
+
+        oView.bindObject({
+          path: sProductKey,
+          parameters: {
+            expand: "Category,Subcategories/Subcategory",
+          },
+          events: {
+            dataRequested: fDataRequestedHandler,
+            dataReceived: fDataReceivedHandler,
+          },
+        });
+      },
+
+      /**
+       * Set page to edit mode.
+       */
+      setEditMode: function () {
+        const oCurrentDate = new Date();
+        const sProductReleaseDate = this.getProductData("ReleaseDate");
+        const sProductCategoryId = this.getProductData("Category_ID");
+
+        this.setSubcategoriesMultiComboBoxItems(sProductCategoryId);
+
+        this.oViewModel.setProperty("/MaxReleaseDate", oCurrentDate);
+        this.oViewModel.setProperty("/MinDiscountDate", sProductReleaseDate);
+        this.oViewModel.setProperty("/MaxDiscountDate", oCurrentDate);
+
+        this.oViewModel.setProperty("/IsEditMode", true);
+      },
+
+      /**
+       * Save product button press event handler.
+       */
+      onSaveProductButtonPress: function () {
+        const aProductDataFields = this.getView().getControlsByFieldGroupId("ProductDataField");
+        const bAreProductDataRequiredFieldsFilled = this.validateRequiredFieldsToBeFilled(aProductDataFields);
+
+        if (!bAreProductDataRequiredFieldsFilled) {
+          this.oViewModel.setProperty("/IsProductFormValid", false);
+
+          return;
+        }
+
+        const oDataModel = this.getModel();
+
+        this.updateProductSubcategories();
+
+        oDataModel.submitChanges({
+          success: () => {
+            MessageToast.show(this.getLocalizedString("SaveProductSuccess"));
+          },
+          error: () => {
+            MessageToast.show(this.getLocalizedString("SaveProductError"));
+          },
+        });
+
+        oDataModel.refresh(true);
+
+        this.closeEditProductForm();
+      },
+
+      /**
+       * Category select change event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onCategorySelectChange: function (oEvent) {
+        const oSelect = oEvent.getSource();
+        const sSelectedCategoryId = oSelect.getSelectedKey();
+
+        this.clearSubcategoriesMultiComboBoxSelectedItems();
+        this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
+      },
+
+      /**
+       * Set subcategories of given category to items aggregation of subcategories MultiComboBox.
+       *
+       * @param {string} sCategoryId - Сategory id.
+       */
+      setSubcategoriesMultiComboBoxItems: function (sCategoryId) {
+        const aSubcategoriesMultiComboBox = this.byId("idProductSubcategoriesMultiComboBox");
+        const oFilter = new Filter("SubcategoryFor_ID", FilterOperator.EQ, sCategoryId);
+
+        aSubcategoriesMultiComboBox.getBinding("items").filter(oFilter);
+      },
+
+      /**
+       * Clear subcategories MultiComboBox selected items.
+       */
+      clearSubcategoriesMultiComboBoxSelectedItems: function () {
+        const aSubcategoriesMultiComboBox = this.byId("idProductSubcategoriesMultiComboBox");
+
+        aSubcategoriesMultiComboBox.setSelectedItems([]);
+      },
+
+      /**
+       * Update product subcategories.
+       */
+      updateProductSubcategories: function () {
+        const aSelectedSubcategoriesIds = this.byId("idProductSubcategoriesMultiComboBox").getSelectedKeys();
+        const aProductSubcategoriesIds = this.getProductData("Subcategories", "/ID");
+
+        const aSubcategoriesToAdd = aSelectedSubcategoriesIds.filter(
+          (sSubcategoryId) => !aProductSubcategoriesIds.includes(sSubcategoryId)
+        );
+
+        const aSubcategoriesToRemove = this.getProductData("Subcategories").filter((sSubcategoryPath) => {
+          const sId = this.getModel().getProperty("/" + sSubcategoryPath + "/Subcategory/ID");
+
+          return !aSelectedSubcategoriesIds.includes(sId);
+        });
+
+        aSubcategoriesToAdd.length && this.addSubcategories(aSubcategoriesToAdd);
+        aSubcategoriesToRemove.length && this.removeSubcategories(aSubcategoriesToRemove);
+      },
+
+      /**
+       * Add subcategories to product.
+       *
+       * @param {string[]} aSubcategoriesToAdd - Ids of subcategories to add to current product.
+       */
+      addSubcategories: function (aSubcategoriesToAdd) {
+        const oDataModel = this.getModel();
+
+        aSubcategoriesToAdd.forEach((sSubcategoryId) => {
+          const oPayload = {
+            Product_ID: this.sProductId,
+            Subcategory_ID: sSubcategoryId,
+          };
+
+          oDataModel.create("/ProductsSubcategories", oPayload);
+        });
+      },
+
+      /**
+       * Remove subcategories from product.
+       *
+       * @param {string[]} aSubcategoriesToAdd - Ids of subcategories to remove from current product.
+       */
+      removeSubcategories: function (aSubcategoriesToRemove) {
+        const oDataModel = this.getModel();
+
+        aSubcategoriesToRemove.forEach((sPath) => {
+          oDataModel.remove("/" + sPath);
+        });
+      },
+
+      /**
        * Cancel product editing button press event handler.
        */
       onCancelProductEditingButtonPress: function () {
+        const oDataModel = this.getModel();
+
+        oDataModel.resetChanges();
+
         this.closeEditProductForm();
       },
 
@@ -102,23 +252,85 @@ sap.ui.define(
       },
 
       /**
-       * Set page to edit mode.
+       * Release date picker change event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
        */
-      setEditMode: function () {
-        this.oViewModel.setProperty("/IsEditMode", true);
-      },
+      onReleaseDatePickerChange: function (oEvent) {
+        const oReleaseDatePickerValue = oEvent.getSource().getDateValue();
+        const oDiscountDatePicker = this.byId("idDiscountDate");
+        const oDiscountDatePickerValue = oDiscountDatePicker.getDateValue();
 
-      /**
-       * Save product button press event handler.
-       */
-      onSaveProductButtonPress: function () {
-        this.closeEditProductForm();
+        this.oViewModel.setProperty("/MinDiscountDate", oReleaseDatePickerValue);
+
+        if (oDiscountDatePickerValue && oReleaseDatePickerValue > oDiscountDatePickerValue) {
+          oDiscountDatePicker.fireValidationError({
+            element: oDiscountDatePicker,
+            property: "value",
+            message: this.getLocalizedString("DiscountDateValidation"),
+          });
+
+          return;
+        }
+
+        if (!oDiscountDatePicker.isValidValue()) {
+          oDiscountDatePicker.fireValidationSuccess({
+            element: oDiscountDatePicker,
+            property: "value",
+          });
+        }
       },
 
       /**
        * Delete product button press event handler.
        */
       onDeleteProductButtonPress: function () {},
+
+      /**
+       * ProductDataField field group validateFieldGroup event handler.
+       */
+      onProductDataFieldGroupValidate: function () {
+        this.setProductFormValidity();
+      },
+
+      /**
+       * Set weather product form is valid.
+       */
+      setProductFormValidity: function () {
+        const isFieldGroupValid = this.isFieldGroupValid("ProductDataField");
+
+        this.oViewModel.setProperty("/IsProductFormValid", isFieldGroupValid);
+      },
+
+      /**
+       * Get current product data or a specific property value (if sProperty is defined).
+       *
+       * @param {string} [sProperty] - Property which value should be returned.
+       * @param {string} [sInnerProperty] - Inner property which value should be returned.
+       *
+       * @returns {*} - Product full data or specified property.
+       */
+      getProductData: function (sProperty, sInnerProperty) {
+        const sPath = sProperty
+          ? `/Products(guid'${this.sProductId}')/${sProperty}`
+          : `/Products(guid'${this.sProductId}')`;
+
+        const vData = this.getModel().getProperty(sPath);
+
+        if (!sInnerProperty) {
+          return vData;
+        }
+
+        switch (sProperty) {
+          case "Subcategories":
+            return vData.map((sPath) =>
+              this.getModel().getProperty(`/${sPath}/Subcategory${sInnerProperty}`)
+            );
+
+          default:
+            return vData;
+        }
+      },
     });
   }
 );

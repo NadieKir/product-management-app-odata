@@ -74,7 +74,8 @@
         "settings": {
           "operationMode": "Server",
           "autoExpandSelect": true,
-          "earlyRequests": true
+          "earlyRequests": true,
+          "defaultBindingMode": "TwoWay"
         }
       }
     },

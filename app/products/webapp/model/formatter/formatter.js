@@ -29,7 +29,7 @@ sap.ui.define(
       sortButtonStyleFormatter: function (oSorter) {
         const { PATH, DESCENDING } = DEFAULT_PRODUCTS_SORTER;
 
-        if (oSorter?.sPath === PATH && oSorter?.bDescending === DESCENDING) {
+        if (!oSorter || (oSorter?.sPath === PATH && oSorter?.bDescending === DESCENDING)) {
           return "Default";
         }
 
@@ -61,6 +61,27 @@ sap.ui.define(
         if (nAmountOfDays === undefined) return false;
 
         return nAmountOfDays <= nAmountOfDaysToBeNew;
+      },
+
+      /**
+       * Get product subcategories, subcategories properties or concatenated subcategories properties.
+       *
+       * @param {Array} aSubcategoriesPaths - Array of subcategories paths.
+       * @param {string} sProperty - Subcategory property to get.
+       * @param {boolean} bUseJoin - Whether to join subcategories properties.
+       *
+       * @returns {(Array | string)} - Product subcategories, subcategories properties or concatenated subcategories properties.
+       */
+      getSubcategoriesFormatter: function (aSubcategoriesPaths, sProperty, bUseJoin) {
+        if (!Array.isArray(aSubcategoriesPaths)) return [];
+
+        const aSubcategories = aSubcategoriesPaths.map((sPath) => {
+          sPath = sProperty ? `/${sPath}/Subcategory/${sProperty}` : `/${sPath}/Subcategory`;
+
+          return this.getModel().getProperty(sPath);
+        });
+
+        return bUseJoin === "true" ? aSubcategories.join(", ") : aSubcategories;
       },
     };
 

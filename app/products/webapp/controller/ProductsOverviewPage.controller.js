@@ -178,14 +178,14 @@ sap.ui.define(
 
               break;
 
-            case "MainCategory":
-              const aMainCategoryFilters = vFilterFieldValue.map(
+            case "Category":
+              const aCategoryFilters = vFilterFieldValue.map(
                 (sCategory) => new Filter(sFilterName + "_ID", FilterOperator.EQ, sCategory)
               );
 
               aFilters.push(
                 new Filter({
-                  filters: aMainCategoryFilters,
+                  filters: aCategoryFilters,
                   and: false,
                 })
               );
@@ -256,7 +256,7 @@ sap.ui.define(
       setProductsTableSorter: function (sPath, bIsDescending) {
         const oTableBinding = this.byId("idProductsTable").getBinding("items");
         const oGrouping = this.oViewModel.getProperty("/grouping") || null;
-        const oSorter = new Sorter(sPath, bIsDescending);
+        const oSorter = sPath ? new Sorter(sPath, bIsDescending) : null;
 
         oTableBinding.sort(oGrouping ? [oGrouping, oSorter] : oSorter);
 
