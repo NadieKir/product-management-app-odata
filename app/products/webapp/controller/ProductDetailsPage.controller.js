@@ -321,6 +321,18 @@ sap.ui.define(
        */
       onAddSupplierButtonPress: async function () {
         const oSuppliersDialog = await this.getDialog(SUPPLIERS_DIALOG_NAME);
+
+        this.setSuppliersDialogItems(oSuppliersDialog);
+
+        oSuppliersDialog.open();
+      },
+
+      /**
+       * Set suppliers dialog items.
+       *
+       * @param {sap.m.Dialog} oSuppliersDialog - Suppliers dialog.
+       */
+      setSuppliersDialogItems: function (oSuppliersDialog) {
         const aSuppliersDialogItems = oSuppliersDialog.getBinding("items");
 
         const aProductSuppliers = this.byId("idSuppliersTable").getItems();
@@ -338,8 +350,6 @@ sap.ui.define(
             and: true,
           })
         );
-
-        oSuppliersDialog.open();
       },
 
       /**
