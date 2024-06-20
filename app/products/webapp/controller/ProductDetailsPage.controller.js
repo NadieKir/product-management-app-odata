@@ -210,14 +210,12 @@ sap.ui.define(
         const oDataModel = this.getModel();
 
         aSubcategoriesToAdd.forEach((sSubcategoryId) => {
-          const oEntry = {
+          const oPayload = {
             Product_ID: this.sProductId,
             Subcategory_ID: sSubcategoryId,
           };
 
-          oDataModel.createEntry("/ProductsSubcategories", {
-            properties: oEntry,
-          });
+          oDataModel.create("/ProductsSubcategories", oPayload);
         });
       },
 
