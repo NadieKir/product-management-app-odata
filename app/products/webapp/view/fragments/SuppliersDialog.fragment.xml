@@ -5,6 +5,7 @@
     <SelectDialog
         id="idSelectSupplierDialog"
         title="{i18n>Suppliers}"
+        multiSelect="true"
         items="{
             path: '/Suppliers',
             sorter: { path: 'Name' }
