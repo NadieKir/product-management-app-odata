@@ -275,7 +275,7 @@
                                         ]
                                     }"
                                     change="onCategorySelectChange"
-                                    selectedKey="{Category/ID}"
+                                    selectedKey="{Category_ID}"
                                     visible="{productDetailsView>/IsEditMode}"
                                     required="true"
                                 >

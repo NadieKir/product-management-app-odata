@@ -187,12 +187,9 @@ sap.ui.define(
       onCategorySelectChange: function (oEvent) {
         const oSelect = oEvent.getSource();
         const sSelectedCategoryId = oSelect.getSelectedKey();
-        const oProductContext = oSelect.getBindingContext();
 
-        oProductContext.getModel().setProperty("Category_ID", sSelectedCategoryId, oProductContext);
-
-        this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
         this.clearSubcategoriesMultiComboBoxSelectedItems();
+        this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
       },
 
       /**
@@ -246,14 +243,12 @@ sap.ui.define(
         const oDataModel = this.getModel();
 
         aSubcategoriesToAdd.forEach((sSubcategoryId) => {
-          const oEntry = {
+          const oPayload = {
             Product_ID: this.sProductId,
             Subcategory_ID: sSubcategoryId,
           };
 
-          oDataModel.createEntry("/ProductsSubcategories", {
-            properties: oEntry,
-          });
+          oDataModel.create("/ProductsSubcategories", oPayload);
         });
       },
 
