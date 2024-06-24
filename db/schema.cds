@@ -18,6 +18,7 @@ entity Suppliers : cuid {
         City    : String;
         Street  : String;
         ZipCode : Integer;
+        CreatedAt : DateTime default $now;
 }
 
 entity Comments : cuid {
@@ -35,6 +36,7 @@ entity ProductsSubcategories : cuid {
 entity ProductsSuppliers : cuid {
         Product  : Association to Products;
         Supplier : Association to Suppliers;
+        CreatedAt : DateTime default $now;
 }
 
 entity Products : cuid  {

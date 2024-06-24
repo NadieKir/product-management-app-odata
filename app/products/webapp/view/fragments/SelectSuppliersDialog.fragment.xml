@@ -10,8 +10,8 @@
             path: '/Suppliers',
             sorter: { path: 'Name' }
         }"
-        search="onSuppliersDialogSearch"
-        confirm="onSuppliersDialogConfirm"
+        search="onSelectSuppliersDialogSearch"
+        confirm="onSelectSuppliersDialogConfirm"
     >
         <StandardListItem
             title="{Name}"

@@ -3,9 +3,12 @@ sap.ui.define(
     "sap/ui/core/mvc/Controller",
     "productmanagement/products/constant/constant",
     "productmanagement/products/model/i18nModel",
+    "productmanagement/products/helper/helper",
   ],
-  function (Controller, constant, i18nModel) {
+  function (Controller, constant, i18nModel, helper) {
     "use strict";
+
+    const { findClosestParent } = helper;
 
     return Controller.extend("productmanagement.products.controller.BaseController", {
       settingsDialogs: {},
@@ -78,6 +81,18 @@ sap.ui.define(
 
             break;
         }
+      },
+
+      /**
+       * Close dialog.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      closeDialog: function (oEvent) {
+        const oSourceButton = oEvent.getSource();
+        const oRelatedDialog = findClosestParent(sap.m.Dialog, oSourceButton);
+
+        oRelatedDialog.close();
       },
 
       /**

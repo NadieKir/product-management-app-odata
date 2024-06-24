@@ -7,13 +7,13 @@ sap.ui.define(["sap/ui/model/Filter", "sap/ui/model/FilterOperator"], function (
      *
      * @param {sap.ui.base.Event} oEvent - Event object.
      */
-    onSuppliersDialogSearch: function (oEvent) {
+    onSelectSuppliersDialogSearch: function (oEvent) {
       const sValue = oEvent.getParameter("value");
-      const aSuppliersDialogItemsBinding = oEvent.getSource().getBinding("items");
-      const oCurrentProductSuppliersFilter = aSuppliersDialogItemsBinding.aFilters[0];
+      const aSelectSuppliersDialogItemsBinding = oEvent.getSource().getBinding("items");
+      const oCurrentProductSuppliersFilter = aSelectSuppliersDialogItemsBinding.aFilters[0];
 
       if (!sValue) {
-        aSuppliersDialogItemsBinding.filter(oCurrentProductSuppliersFilter);
+        aSelectSuppliersDialogItemsBinding.filter(oCurrentProductSuppliersFilter);
 
         return;
       }
@@ -25,7 +25,7 @@ sap.ui.define(["sap/ui/model/Filter", "sap/ui/model/FilterOperator"], function (
         caseSensitive: false,
       });
 
-      aSuppliersDialogItemsBinding.filter([oCurrentProductSuppliersFilter, oQueryFilter]);
+      aSelectSuppliersDialogItemsBinding.filter([oCurrentProductSuppliersFilter, oQueryFilter]);
     },
 
     /**
@@ -33,13 +33,12 @@ sap.ui.define(["sap/ui/model/Filter", "sap/ui/model/FilterOperator"], function (
      *
      * @param {sap.ui.base.Event} oEvent - Event object.
      */
-    onSuppliersDialogConfirm: function (oEvent) {
-      const aSelectedSuppliers = oEvent
-        .getParameter("selectedItems")
-        .map((oSupplier) => oSupplier.getBindingContext().getObject());
+    onSelectSuppliersDialogConfirm: function (oEvent) {
       const oSuppliersTableItems = this.byId("idSuppliersTable").getBinding("items");
+      const aSelectedItems = oEvent.getParameter("selectedItems");
+      const aSelectedSuppliers = aSelectedItems.map((oSupplier) => oSupplier.getBindingContext().getObject());
 
-      aSelectedSuppliers.forEach((oSupplier) =>
+      aSelectedSuppliers.forEach((oSupplier) => {
         oSuppliersTableItems.create(
           {
             Product_ID: this.sProductId,
@@ -47,8 +46,8 @@ sap.ui.define(["sap/ui/model/Filter", "sap/ui/model/FilterOperator"], function (
             Supplier: oSupplier,
           },
           true
-        )
-      );
+        );
+      });
     },
   };
 });

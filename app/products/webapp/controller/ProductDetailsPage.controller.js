@@ -1,34 +1,35 @@
 sap.ui.define(
   [
     "productmanagement/products/controller/BaseController",
-    "productmanagement/products/controller/fragments/SuppliersDialog",
+    "productmanagement/products/controller/fragments/SelectSuppliersDialog",
+    "productmanagement/products/controller/fragments/CreateSupplierDialog",
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "productmanagement/products/model/formatter/formatter",
     "productmanagement/products/constant/constant",
-    "productmanagement/products/api/countriesService",
   ],
   function (
     BaseController,
-    SuppliersDialog,
+    SelectSuppliersDialog,
+    CreateSupplierDialog,
     JSONModel,
     MessageToast,
     Filter,
     FilterOperator,
     formatter,
-    constant,
-    countriesService
+    constant
   ) {
     "use strict";
 
-    const { SUPPLIERS_DIALOG_NAME } = constant;
+    const { SUPPLIERS_DIALOG_NAME, CREATE_SUPPLIER_DIALOG_NAME } = constant;
 
     return BaseController.extend("productmanagement.products.controller.ProductDetailsPage", {
       formatter,
 
-      ...SuppliersDialog,
+      ...SelectSuppliersDialog,
+      ...CreateSupplierDialog,
 
       /**
        * Controller's "init" lifecycle method.
@@ -76,6 +77,8 @@ sap.ui.define(
 
       /**
        * Bind product with sProductId id to view.
+       *
+       * @async
        *
        * @param {string} sProductId - Product id.
        */
@@ -273,7 +276,7 @@ sap.ui.define(
       onCancelProductEditingButtonPress: function () {
         const oDataModel = this.getModel();
 
-        oDataModel.resetChanges();
+        oDataModel.resetChanges(undefined, true, true);
 
         this.closeEditProductForm();
       },
@@ -318,22 +321,24 @@ sap.ui.define(
 
       /**
        * Add supplier button press event handler.
+       *
+       * @async
        */
-      onAddSupplierButtonPress: async function () {
-        const oSuppliersDialog = await this.getDialog(SUPPLIERS_DIALOG_NAME);
+      onSelectSupplierButtonPress: async function () {
+        const oSelectSuppliersDialog = await this.getDialog(SUPPLIERS_DIALOG_NAME);
 
-        this.setSuppliersDialogItems(oSuppliersDialog);
+        this.setSelectSuppliersDialogItems(oSelectSuppliersDialog);
 
-        oSuppliersDialog.open();
+        oSelectSuppliersDialog.open();
       },
 
       /**
        * Set suppliers dialog items.
        *
-       * @param {sap.m.Dialog} oSuppliersDialog - Suppliers dialog.
+       * @param {sap.m.Dialog} oSelectSuppliersDialog - Suppliers dialog.
        */
-      setSuppliersDialogItems: function (oSuppliersDialog) {
-        const aSuppliersDialogItems = oSuppliersDialog.getBinding("items");
+      setSelectSuppliersDialogItems: function (oSelectSuppliersDialog) {
+        const aSelectSuppliersDialogItems = oSelectSuppliersDialog.getBinding("items");
 
         const aProductSuppliers = this.byId("idSuppliersTable").getItems();
         const aProductSuppliersIds = aProductSuppliers.map((oSupplier) =>
@@ -344,7 +349,7 @@ sap.ui.define(
           (sProductSupplierId) => new Filter("ID", FilterOperator.NE, sProductSupplierId)
         );
 
-        aSuppliersDialogItems.filter(
+        aSelectSuppliersDialogItems.filter(
           new Filter({
             filters: aFilters,
             and: true,
@@ -353,9 +358,15 @@ sap.ui.define(
       },
 
       /**
-       * Delete product button press event handler.
+       * Create supplier button press event handler.
+       *
+       * @async
        */
-      onDeleteProductButtonPress: function () {},
+      onCreateSupplierButtonPress: async function () {
+        const oCreateSupplierDialog = await this.getDialog(CREATE_SUPPLIER_DIALOG_NAME);
+
+        oCreateSupplierDialog.open();
+      },
 
       /**
        * ProductDataField field group validateFieldGroup event handler.

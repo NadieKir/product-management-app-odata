@@ -1,0 +1,167 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        title="{i18n>CreateSupplier}"
+        beforeOpen="onBeforeCreateSupplierDialogOpen"
+    >
+        <f:SimpleForm
+            maxContainerCols="1"
+            layout="ResponsiveGridLayout"
+            labelSpanL="12"
+            labelSpanM="12"
+            emptySpanL="0"
+            emptySpanM="0"
+            columnsL="1"
+            columnsM="1"
+        >
+            <Label
+                text="{i18n>Name}"
+                required="true"
+            />
+            <Input
+                name="Name"
+                fieldGroupIds="ProductDataField,SupplierName"
+                placeholder="{i18n>SupplierNamePlaceholder}"
+                value="{
+                  path : 'Name',
+                  type : 'sap.ui.model.type.String',
+                  constraints : {
+                      minLength: 2
+                  }
+                }"
+                required="true"
+            />
+
+            <Label
+                text="{i18n>Country}"
+                required="true"
+            />
+            <Input
+                name="Country"
+                fieldGroupIds="ProductDataField,SupplierCountry"
+                placeholder="{i18n>CountryPlaceholder}"
+                value="{
+                    path : 'Country',
+                    type : 'sap.ui.model.type.String',
+                    constraints : {
+                        minLength: 2
+                    }
+                }"
+                showSuggestion="true"
+                suggestionItems="{countries>/Countries}"
+                change="onSupplierCountryInputChange"
+                required="true"
+            >
+                <core:Item
+                    key="{countries>iso2}"
+                    text="{countries>name}"
+                />
+            </Input>
+
+            <Label
+                text="{i18n>State}"
+                required="true"
+            />
+            <Input
+                name="State"
+                fieldGroupIds="ProductDataField,SupplierState"
+                placeholder="{i18n>StatePlaceholder}"
+                value="{
+                    path : 'State',
+                    type : 'sap.ui.model.type.String',
+                    constraints : {
+                        minLength: 2
+                    }
+                }"
+                showSuggestion="true"
+                suggestionItems="{countries>/States}"
+                change="onSupplierStateInputChange"
+                required="true"
+            >
+                <suggestionItems>
+                    <core:Item
+                        key="{countries>iso2}"
+                        text="{countries>name}"
+                    />
+                </suggestionItems>
+            </Input>
+
+            <Label
+                text="{i18n>City}"
+                required="true"
+            />
+            <Input
+                name="City"
+                fieldGroupIds="ProductDataField,SupplierCity"
+                placeholder="{i18n>CityPlaceholder}"
+                value="{
+                    path : 'City',
+                    type : 'sap.ui.model.type.String',
+                    constraints : {
+                        minLength: 2
+                    }
+                }"
+                showSuggestion="true"
+                suggestionItems="{countries>/Cities}"
+                required="true"
+            >
+                <suggestionItems>
+                    <core:Item
+                        key="{countries>id}"
+                        text="{countries>name}"
+                    />
+                </suggestionItems>
+            </Input>
+
+            <Label
+                text="{i18n>Street}"
+                required="true"
+            />
+            <Input
+                name="Street"
+                fieldGroupIds="ProductDataField,SupplierStreet"
+                placeholder="{i18n>StreetPlaceholder}"
+                value="{
+                  path : 'Street',
+                  type : 'sap.ui.model.type.String',
+                  constraints : {
+                      minLength: 3
+                  }
+                }"
+                required="true"
+            />
+
+            <Label
+                text="{i18n>ZipCode}"
+                required="true"
+            />
+            <Input
+                name="ZipCode"
+                fieldGroupIds="ProductDataField,SupplierZipCode"
+                placeholder="{i18n>ZipCodePlaceholder}"
+                value="{
+                    path : 'ZipCode',
+                    type: 'custom.type.ZipCode'
+                }"
+                required="true"
+            />
+        </f:SimpleForm>
+
+        <beginButton>
+            <Button
+                text="{i18n>Create}"
+                press="onCreateSupplierDialogConfirmButtonPress"
+                type="Emphasized"
+            />
+        </beginButton>
+        <endButton>
+            <Button
+                text="{i18n>Cancel}"
+                press="onCreateSupplierDialogCancelButtonPress"
+            />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

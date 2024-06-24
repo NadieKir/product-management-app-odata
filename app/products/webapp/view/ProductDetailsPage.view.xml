@@ -433,7 +433,10 @@
                 <ObjectPageSubSection>
                     <m:Table
                         id="idSuppliersTable"
-                        items="{/ProductsSuppliers}"
+                        items="{
+                            path: '/ProductsSuppliers',
+                            sorter: { path: 'CreatedAt' }
+                        }"
                         autoPopinMode="true"
                         fixedLayout="false"
                         sticky="HeaderToolbar,ColumnHeaders"
@@ -445,11 +448,16 @@
                             >
                                 <m:ToolbarSpacer />
                                 <m:Button
-                                    id="idAddSupplierButton"
-                                    text="{i18n>Add}"
+                                    text="{i18n>Select}"
+                                    type="Neutral"
+                                    icon="sap-icon://duplicate"
+                                    press="onSelectSupplierButtonPress"
+                                />
+                                <m:Button
+                                    text="{i18n>Create}"
                                     type="Emphasized"
                                     icon="sap-icon://add"
-                                    press="onAddSupplierButtonPress"
+                                    press="onCreateSupplierButtonPress"
                                 />
                             </m:OverflowToolbar>
                         </m:headerToolbar>
