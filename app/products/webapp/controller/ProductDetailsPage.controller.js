@@ -271,25 +271,6 @@ sap.ui.define(
       },
 
       /**
-       * Cancel product editing button press event handler.
-       */
-      onCancelProductEditingButtonPress: function () {
-        const oDataModel = this.getModel();
-
-        oDataModel.resetChanges(undefined, true, true);
-
-        this.closeEditProductForm();
-      },
-
-      /**
-       * Reset edit mode and close edit product form.
-       */
-      closeEditProductForm: function () {
-        this.oViewModel.setProperty("/IsEditMode", false);
-        this.oViewModel.setProperty("/IsProductFormValid", true);
-      },
-
-      /**
        * Release date picker change event handler.
        *
        * @param {sap.ui.base.Event} oEvent - Event object.
@@ -366,6 +347,50 @@ sap.ui.define(
         const oCreateSupplierDialog = await this.getDialog(CREATE_SUPPLIER_DIALOG_NAME);
 
         oCreateSupplierDialog.open();
+      },
+
+      /**
+       * Delete supplier button press event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onDeleteSupplierButtonPress: function (oEvent) {
+        const oSupplierToRemoveContext = oEvent.getSource().getBindingContext();
+        const oSupplierToRemoveId = oSupplierToRemoveContext.getObject().ID;
+
+        const oSuppliersTableItems = this.byId("idSuppliersTable").getBinding("items");
+        const oRemoveSupplierFilter = new Filter("ID", FilterOperator.NE, oSupplierToRemoveId);
+        const oFilter = new Filter({
+          filters: oSuppliersTableItems.aFilters.concat(oRemoveSupplierFilter),
+          and: true,
+        });
+
+        oSupplierToRemoveContext.delete();
+        oSuppliersTableItems.filter(oFilter);
+      },
+
+      /**
+       * Cancel product editing button press event handler.
+       */
+      onCancelProductEditingButtonPress: function () {
+        const oDataModel = this.getModel();
+
+        oDataModel.resetChanges(null, true, true);
+
+        this.closeEditProductForm();
+      },
+
+      /**
+       * Reset edit mode and close edit product form.
+       */
+      closeEditProductForm: function () {
+        const oSuppliersTableItems = this.byId("idSuppliersTable").getBinding("items");
+        const oSuppliersTableDefaultFilter = oSuppliersTableItems.aFilters[0];
+
+        oSuppliersTableItems.filter(oSuppliersTableDefaultFilter);
+
+        this.oViewModel.setProperty("/IsEditMode", false);
+        this.oViewModel.setProperty("/IsProductFormValid", true);
       },
 
       /**

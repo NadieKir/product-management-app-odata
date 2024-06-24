@@ -15,6 +15,9 @@ sap.ui.define(
         manifest: "json",
       },
 
+      /**
+       * Component.js init method.
+       */
       init: function () {
         UIComponent.prototype.init.apply(this, arguments);
 
@@ -25,6 +28,9 @@ sap.ui.define(
         this.configureODataModel();
       },
 
+      /**
+       * Configure oData model.
+       */
       configureODataModel: function () {
         const oDataModel = this.getModel();
         const aDefaultDeferredGroups = oDataModel.getDeferredGroups();
