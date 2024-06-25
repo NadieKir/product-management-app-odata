@@ -68,7 +68,7 @@ sap.ui.define(
           IsCreateMode: false,
           IsEditMode: false,
           IsProductFormValid: true,
-          IsSupplierFormValid: false,
+          IsSupplierFormValid: true,
         });
 
         this.getView().setModel(oDefaultProductDetailsViewModel, "productDetailsView");
@@ -91,34 +91,35 @@ sap.ui.define(
 
         const sProductKey = oDataModel.createKey("/Products", { ID: sProductId });
 
-        const fDataRequestedHandler = () => {
-          oView.setBusy(true);
-        };
-
-        const fDataReceivedHandler = (oData) => {
-          const oReceivedProduct = oData.getParameter("data");
-
-          if (!oReceivedProduct) {
-            this.getRouter().getTargets().display("notFoundPage");
-
-            return;
-          }
-
-          this.setProductSuppliersTableItems(sProductId);
-
-          oView.setBusy(false);
-        };
-
         oView.bindObject({
           path: sProductKey,
           parameters: {
             expand: "Category,Subcategories/Subcategory,Suppliers/Supplier",
           },
           events: {
-            dataRequested: fDataRequestedHandler,
-            dataReceived: fDataReceivedHandler,
+            dataRequested: () => oView.setBusy(true),
+            dataReceived: (oData) => this.onProductDataReceived(oData),
           },
         });
+      },
+
+      /**
+       * Bind product dataReceived event handler.
+       *
+       * @param {Object} oData - Received data.
+       */
+      onProductDataReceived: function (oData) {
+        const oReceivedProduct = oData.getParameter("data");
+
+        if (!oReceivedProduct) {
+          this.getRouter().getTargets().display("notFoundPage");
+
+          return;
+        }
+
+        this.setProductSuppliersTableItems(oReceivedProduct.ID);
+
+        this.getView().setBusy(false);
       },
 
       /**
@@ -152,10 +153,11 @@ sap.ui.define(
       /**
        * Save product button press event handler.
        */
-      onSaveProductButtonPress: function (oEvent) {
-        const bAreProductDataFieldValid = this.validateFieldsByFieldGroupId("ProductDataField");
+      onSaveProductButtonPress: function () {
+        const aProductDataFields = this.getView().getControlsByFieldGroupId("ProductDataField");
+        const bAreProductDataRequiredFieldsFilled = this.validateRequiredFieldsToBeFilled(aProductDataFields);
 
-        if (!bAreProductDataFieldValid) {
+        if (!bAreProductDataRequiredFieldsFilled) {
           this.oViewModel.setProperty("/IsProductFormValid", false);
 
           return;

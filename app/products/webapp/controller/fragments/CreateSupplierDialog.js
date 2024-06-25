@@ -18,11 +18,6 @@ sap.ui.define(
       onBeforeCreateSupplierDialogOpen: function (oEvent) {
         const oDialog = oEvent.getSource();
         const oDataModel = this.getModel();
-
-        const onCreateSupplierEntrySuccess = (oData) => {
-          this.oNewSupplier = oData;
-        };
-
         const oEntry = oDataModel.createEntry("/Suppliers", {
           properties: {
             Name: "",
@@ -33,7 +28,7 @@ sap.ui.define(
             ZipCode: "",
           },
           groupId: CREATE_SUPPLIER_GROUP,
-          success: (oData) => onCreateSupplierEntrySuccess(oData),
+          success: (oData) => (this.oNewSupplier = oData),
         });
 
         oDialog.setBindingContext(oEntry);
@@ -67,37 +62,42 @@ sap.ui.define(
        * @param {sap.ui.base.Event} oEvent - Event object.
        */
       onCreateSupplierDialogConfirmButtonPress: function (oEvent) {
-        const aSupplierDataFields = this.getView().getControlsByFieldGroupId("SupplierDataField");
-        const bAreSupplierDataRequiredFieldsFilled =
-          this.validateRequiredFieldsToBeFilled(aSupplierDataFields);
+        const aSupplierFields = this.getView().getControlsByFieldGroupId("SupplierDataField");
+        const bAreSupplierRequiredFieldsFilled = this.validateRequiredFieldsToBeFilled(aSupplierFields);
 
-        if (!bAreSupplierDataRequiredFieldsFilled) {
+        if (!bAreSupplierRequiredFieldsFilled) {
           this.oViewModel.setProperty("/IsSupplierFormValid", false);
 
           return;
         }
 
         const oDataModel = this.getModel();
-
-        const onCreateSupplierSuccess = () => {
-          const oSuppliersTableItems = this.byId("idSuppliersTable").getBinding("items");
-
-          oSuppliersTableItems.create(
-            {
-              Product_ID: this.sProductId,
-              Supplier_ID: this.oNewSupplier.ID,
-              Supplier: this.oNewSupplier,
-            },
-            true
-          );
-
-          this.closeDialog(oEvent);
-        };
+        const oSourceButton = oEvent.getSource();
 
         oDataModel.submitChanges({
           groupId: CREATE_SUPPLIER_GROUP,
-          success: onCreateSupplierSuccess,
+          success: () => this.onCreateSupplierSuccess(oSourceButton),
         });
+      },
+
+      /**
+       * Create supplier success event handler.
+       *
+       * @param {sap.ui.core.Control} oSource - Control called supplier saving.
+       */
+      onCreateSupplierSuccess: function (oSource) {
+        const oSuppliersTableItems = this.byId("idSuppliersTable").getBinding("items");
+
+        oSuppliersTableItems.create(
+          {
+            Product_ID: this.sProductId,
+            Supplier_ID: this.oNewSupplier.ID,
+            Supplier: this.oNewSupplier,
+          },
+          true
+        );
+
+        this.closeDialog(oSource);
       },
 
       /**
@@ -107,11 +107,14 @@ sap.ui.define(
        */
       onCreateSupplierDialogCancelButtonPress: function (oEvent) {
         const oDataModel = this.getModel();
-        const sPathToReset = oEvent.getSource().getBindingContext().getPath();
+        const oSourceButton = oEvent.getSource();
+        const sPathToReset = oSourceButton.getBindingContext().getPath();
 
         oDataModel.resetChanges([sPathToReset], false, true);
 
-        this.closeDialog(oEvent);
+        this.closeDialog(oSourceButton);
+
+        this.oViewModel.setProperty("/IsSupplierFormValid", true);
       },
 
       /**
