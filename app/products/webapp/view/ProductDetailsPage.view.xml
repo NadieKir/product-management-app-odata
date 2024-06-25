@@ -309,7 +309,7 @@
                                         formatter: '.formatter.getSubcategoriesFormatter'
                                     }"
                                     visible="{productDetailsView>/IsEditMode}"
-                                    selectionChange="validateRequiredMultiComboBox"
+                                    selectionChange="onSubcategoriesMultiComboBoxChange"
                                     required="true"
                                 >
                                     <core:Item

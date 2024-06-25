@@ -53,11 +53,30 @@ sap.ui.define(
       },
 
       /**
+       * SupplierDataField field group validateFieldGroup event handler.
+       */
+      onSupplierDataFieldGroupValidate: function () {
+        const isFieldGroupValid = this.isFieldGroupValid("SupplierDataField");
+
+        this.oViewModel.setProperty("/IsSupplierFormValid", isFieldGroupValid);
+      },
+
+      /**
        * Create supplier button press event handler.
        *
        * @param {sap.ui.base.Event} oEvent - Event object.
        */
       onCreateSupplierDialogConfirmButtonPress: function (oEvent) {
+        const aSupplierDataFields = this.getView().getControlsByFieldGroupId("SupplierDataField");
+        const bAreSupplierDataRequiredFieldsFilled =
+          this.validateRequiredFieldsToBeFilled(aSupplierDataFields);
+
+        if (!bAreSupplierDataRequiredFieldsFilled) {
+          this.oViewModel.setProperty("/IsSupplierFormValid", false);
+
+          return;
+        }
+
         const oDataModel = this.getModel();
 
         const onCreateSupplierSuccess = () => {

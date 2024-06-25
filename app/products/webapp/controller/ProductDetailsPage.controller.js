@@ -68,6 +68,7 @@ sap.ui.define(
           IsCreateMode: false,
           IsEditMode: false,
           IsProductFormValid: true,
+          IsSupplierFormValid: false,
         });
 
         this.getView().setModel(oDefaultProductDetailsViewModel, "productDetailsView");
@@ -151,11 +152,10 @@ sap.ui.define(
       /**
        * Save product button press event handler.
        */
-      onSaveProductButtonPress: function () {
-        const aProductDataFields = this.getView().getControlsByFieldGroupId("ProductDataField");
-        const bAreProductDataRequiredFieldsFilled = this.validateRequiredFieldsToBeFilled(aProductDataFields);
+      onSaveProductButtonPress: function (oEvent) {
+        const bAreProductDataFieldValid = this.validateFieldsByFieldGroupId("ProductDataField");
 
-        if (!bAreProductDataRequiredFieldsFilled) {
+        if (!bAreProductDataFieldValid) {
           this.oViewModel.setProperty("/IsProductFormValid", false);
 
           return;
@@ -180,7 +180,7 @@ sap.ui.define(
       },
 
       /**
-       * Category select change event handler.
+       * Category Select change event handler.
        *
        * @param {sap.ui.base.Event} oEvent - Event object.
        */
@@ -190,6 +190,20 @@ sap.ui.define(
 
         this.clearSubcategoriesMultiComboBoxSelectedItems();
         this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
+      },
+
+      /**
+       * Subcategories MultiComboBox selectionChange event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onSubcategoriesMultiComboBoxChange: function (oEvent) {
+        const bIsSubcategoriesMultiComboBoxValid = this.validateRequiredMultiComboBox(oEvent);
+        const bIsProductFormValid = this.oViewModel.getProperty("/IsProductFormValid");
+
+        if (bIsProductFormValid && !bIsSubcategoriesMultiComboBoxValid) {
+          this.oViewModel.setProperty("/IsProductFormValid", false);
+        }
       },
 
       /**
@@ -392,13 +406,6 @@ sap.ui.define(
        * ProductDataField field group validateFieldGroup event handler.
        */
       onProductDataFieldGroupValidate: function () {
-        this.setProductFormValidity();
-      },
-
-      /**
-       * Set weather product form is valid.
-       */
-      setProductFormValidity: function () {
         const isFieldGroupValid = this.isFieldGroupValid("ProductDataField");
 
         this.oViewModel.setProperty("/IsProductFormValid", isFieldGroupValid);

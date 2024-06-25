@@ -99,6 +99,8 @@ sap.ui.define(
        * Validates MultiComboBox value not to be empty.
        *
        * @param {sap.ui.base.Event} oEvent - Event object.
+       *
+       * @returns {boolean} - Whether MultiComboBox is valid.
        */
       validateRequiredMultiComboBox: function (oEvent) {
         const oMultiComboBox = oEvent.getSource();
@@ -110,7 +112,7 @@ sap.ui.define(
             property: "selectedKeys",
           });
 
-          return;
+          return true;
         }
 
         oMultiComboBox.fireValidationError({
@@ -118,6 +120,8 @@ sap.ui.define(
           property: "selectedKeys",
           message: this.getLocalizedString("MultiComboBoxValidation.Required"),
         });
+
+        return false;
       },
 
       /**
@@ -151,6 +155,37 @@ sap.ui.define(
         });
 
         return bAreFieldsFilled;
+      },
+
+      validateFieldsByFieldGroupId: function (sGroupId) {
+        const aFields = this.getView()
+          .getControlsByFieldGroupId(sGroupId)
+          .filter((oControl) => oControl instanceof sap.m.InputBase);
+
+        const bAreRequiredFieldsFilled = this.validateRequiredFieldsToBeFilled(aFields); // later I'll combine this method functionality with validateFieldsByFieldGroupId method
+
+        if (!bAreRequiredFieldsFilled) return false;
+
+        let bAreFieldsValuesValid = true;
+
+        // Found this implementation but works as sh*t,
+        // Can't write something that works fine there((
+
+        // aFields.forEach((oControl) => {
+        //   const oBinding = oControl.getBinding(this.getFieldValueProperty(oControl));
+
+        //   try {
+        //     console.log(oBinding.getValue()); // old value of last input is there
+
+        //     oBinding.getType().validateValue(oBinding.getValue());
+        //   } catch (oException) {
+        //     console.log(oControl);
+
+        //     bAreFieldsValuesValid = false;
+        //   }
+        // });
+
+        return bAreFieldsValuesValid;
       },
 
       /**

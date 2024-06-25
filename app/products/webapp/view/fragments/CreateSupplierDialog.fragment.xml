@@ -16,6 +16,7 @@
             emptySpanM="0"
             columnsL="1"
             columnsM="1"
+            validateFieldGroup="onSupplierDataFieldGroupValidate"
         >
             <Label
                 text="{i18n>Name}"
@@ -23,7 +24,7 @@
             />
             <Input
                 name="Name"
-                fieldGroupIds="ProductDataField,SupplierName"
+                fieldGroupIds="SupplierDataField,SupplierName"
                 placeholder="{i18n>SupplierNamePlaceholder}"
                 value="{
                   path : 'Name',
@@ -41,7 +42,7 @@
             />
             <Input
                 name="Country"
-                fieldGroupIds="ProductDataField,SupplierCountry"
+                fieldGroupIds="SupplierDataField,SupplierCountry"
                 placeholder="{i18n>CountryPlaceholder}"
                 value="{
                     path : 'Country',
@@ -67,7 +68,7 @@
             />
             <Input
                 name="State"
-                fieldGroupIds="ProductDataField,SupplierState"
+                fieldGroupIds="SupplierDataField,SupplierState"
                 placeholder="{i18n>StatePlaceholder}"
                 value="{
                     path : 'State',
@@ -95,7 +96,7 @@
             />
             <Input
                 name="City"
-                fieldGroupIds="ProductDataField,SupplierCity"
+                fieldGroupIds="SupplierDataField,SupplierCity"
                 placeholder="{i18n>CityPlaceholder}"
                 value="{
                     path : 'City',
@@ -122,7 +123,7 @@
             />
             <Input
                 name="Street"
-                fieldGroupIds="ProductDataField,SupplierStreet"
+                fieldGroupIds="SupplierDataField,SupplierStreet"
                 placeholder="{i18n>StreetPlaceholder}"
                 value="{
                   path : 'Street',
@@ -140,7 +141,7 @@
             />
             <Input
                 name="ZipCode"
-                fieldGroupIds="ProductDataField,SupplierZipCode"
+                fieldGroupIds="SupplierDataField,SupplierZipCode"
                 placeholder="{i18n>ZipCodePlaceholder}"
                 value="{
                     path : 'ZipCode',
@@ -155,6 +156,7 @@
                 text="{i18n>Create}"
                 press="onCreateSupplierDialogConfirmButtonPress"
                 type="Emphasized"
+                enabled="{productDetailsView>/IsSupplierFormValid}"
             />
         </beginButton>
         <endButton>
