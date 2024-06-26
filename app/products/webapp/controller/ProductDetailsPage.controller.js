@@ -167,11 +167,10 @@ sap.ui.define(
           return;
         }
 
-        const oDataModel = this.getModel(),
-          oEditableProductModel = this.getModel("editableProduct");
-
-        const oCurrentProductContext = this.getView().getBindingContext(),
-          oCurrentProduct = oCurrentProductContext.getObject();
+        const oDataModel = this.getModel();
+        const oEditableProductModel = this.getModel("editableProduct");
+        const oCurrentProductContext = this.getView().getBindingContext();
+        const oCurrentProduct = oCurrentProductContext.getObject();
 
         for (let sKey in oCurrentProduct) {
           switch (sKey) {

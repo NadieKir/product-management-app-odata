@@ -319,8 +319,8 @@
                                 </m:MultiComboBox>
                                 <m:Text
                                     text="{ 
-                                        parts: [{ path: 'Subcategories' }, { value: 'Name' }, { value: 'true' }],                                 
-                                        formatter: '.formatter.getSubcategoriesFormatter'
+                                        parts: [{ path: 'Subcategories' }, { value: 'Name' }],                                 
+                                        formatter: '.formatter.getJoinedSubcategoriesFormatter'
                                     }"
                                     emptyIndicatorMode='On'
                                     visible="{= !${productDetailsView>/IsEditMode}}"
