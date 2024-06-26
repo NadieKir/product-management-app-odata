@@ -1,17 +1,35 @@
 sap.ui.define(
   [
     "productmanagement/products/controller/BaseController",
+    "productmanagement/products/controller/fragments/SelectSuppliersDialog",
+    "productmanagement/products/controller/fragments/CreateSupplierDialog",
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "productmanagement/products/model/formatter/formatter",
+    "productmanagement/products/constant/constant",
   ],
-  function (BaseController, JSONModel, MessageToast, Filter, FilterOperator, formatter) {
+  function (
+    BaseController,
+    SelectSuppliersDialog,
+    CreateSupplierDialog,
+    JSONModel,
+    MessageToast,
+    Filter,
+    FilterOperator,
+    formatter,
+    constant
+  ) {
     "use strict";
+
+    const { SUPPLIERS_DIALOG_NAME, CREATE_SUPPLIER_DIALOG_NAME } = constant;
 
     return BaseController.extend("productmanagement.products.controller.ProductDetailsPage", {
       formatter,
+
+      ...SelectSuppliersDialog,
+      ...CreateSupplierDialog,
 
       /**
        * Controller's "init" lifecycle method.
@@ -50,6 +68,7 @@ sap.ui.define(
           IsCreateMode: false,
           IsEditMode: false,
           IsProductFormValid: true,
+          IsSupplierFormValid: true,
         });
 
         this.getView().setModel(oDefaultProductDetailsViewModel, "productDetailsView");
@@ -59,6 +78,8 @@ sap.ui.define(
 
       /**
        * Bind product with sProductId id to view.
+       *
+       * @async
        *
        * @param {string} sProductId - Product id.
        */
@@ -70,32 +91,46 @@ sap.ui.define(
 
         const sProductKey = oDataModel.createKey("/Products", { ID: sProductId });
 
-        const fDataRequestedHandler = () => {
-          oView.setBusy(true);
-        };
-
-        const fDataReceivedHandler = (oData) => {
-          const oReceivedProduct = oData.getParameter("data");
-
-          if (!oReceivedProduct) {
-            this.getRouter().getTargets().display("notFoundPage");
-
-            return;
-          }
-
-          oView.setBusy(false);
-        };
-
         oView.bindObject({
           path: sProductKey,
           parameters: {
-            expand: "Category,Subcategories/Subcategory",
+            expand: "Category,Subcategories/Subcategory,Suppliers/Supplier",
           },
           events: {
-            dataRequested: fDataRequestedHandler,
-            dataReceived: fDataReceivedHandler,
+            dataRequested: () => oView.setBusy(true),
+            dataReceived: (oData) => this.onProductDataReceived(oData),
           },
         });
+      },
+
+      /**
+       * Bind product dataReceived event handler.
+       *
+       * @param {Object} oData - Received data.
+       */
+      onProductDataReceived: function (oData) {
+        const oReceivedProduct = oData.getParameter("data");
+
+        if (!oReceivedProduct) {
+          this.getRouter().getTargets().display("notFoundPage");
+
+          return;
+        }
+
+        this.setProductSuppliersTableItems(oReceivedProduct.ID);
+
+        this.getView().setBusy(false);
+      },
+
+      /**
+       * Set current product suppliers to suppliers table.
+       *
+       * @param {string} sProductId - Product id.
+       */
+      setProductSuppliersTableItems: function (sProductId) {
+        const oFilter = new Filter("Product_ID", FilterOperator.EQ, sProductId);
+
+        this.byId("idSuppliersTable").getBinding("items").filter(oFilter);
       },
 
       /**
@@ -147,7 +182,7 @@ sap.ui.define(
       },
 
       /**
-       * Category select change event handler.
+       * Category Select change event handler.
        *
        * @param {sap.ui.base.Event} oEvent - Event object.
        */
@@ -157,6 +192,20 @@ sap.ui.define(
 
         this.clearSubcategoriesMultiComboBoxSelectedItems();
         this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
+      },
+
+      /**
+       * Subcategories MultiComboBox selectionChange event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onSubcategoriesMultiComboBoxChange: function (oEvent) {
+        const bIsSubcategoriesMultiComboBoxValid = this.validateRequiredMultiComboBox(oEvent);
+        const bIsProductFormValid = this.oViewModel.getProperty("/IsProductFormValid");
+
+        if (bIsProductFormValid && !bIsSubcategoriesMultiComboBoxValid) {
+          this.oViewModel.setProperty("/IsProductFormValid", false);
+        }
       },
 
       /**
@@ -233,25 +282,6 @@ sap.ui.define(
       },
 
       /**
-       * Cancel product editing button press event handler.
-       */
-      onCancelProductEditingButtonPress: function () {
-        const oDataModel = this.getModel();
-
-        oDataModel.resetChanges();
-
-        this.closeEditProductForm();
-      },
-
-      /**
-       * Reset edit mode and close edit product form.
-       */
-      closeEditProductForm: function () {
-        this.oViewModel.setProperty("/IsEditMode", false);
-        this.oViewModel.setProperty("/IsProductFormValid", true);
-      },
-
-      /**
        * Release date picker change event handler.
        *
        * @param {sap.ui.base.Event} oEvent - Event object.
@@ -282,21 +312,102 @@ sap.ui.define(
       },
 
       /**
-       * Delete product button press event handler.
+       * Add supplier button press event handler.
+       *
+       * @async
        */
-      onDeleteProductButtonPress: function () {},
+      onSelectSupplierButtonPress: async function () {
+        const oSelectSuppliersDialog = await this.getDialog(SUPPLIERS_DIALOG_NAME);
+
+        this.setSelectSuppliersDialogItems(oSelectSuppliersDialog);
+
+        oSelectSuppliersDialog.open();
+      },
+
+      /**
+       * Set suppliers dialog items.
+       *
+       * @param {sap.m.Dialog} oSelectSuppliersDialog - Suppliers dialog.
+       */
+      setSelectSuppliersDialogItems: function (oSelectSuppliersDialog) {
+        const aSelectSuppliersDialogItems = oSelectSuppliersDialog.getBinding("items");
+
+        const aProductSuppliers = this.byId("idSuppliersTable").getItems();
+        const aProductSuppliersIds = aProductSuppliers.map((oSupplier) =>
+          oSupplier.getBindingContext().getProperty("Supplier_ID")
+        );
+
+        const aFilters = aProductSuppliersIds.map(
+          (sProductSupplierId) => new Filter("ID", FilterOperator.NE, sProductSupplierId)
+        );
+
+        aSelectSuppliersDialogItems.filter(
+          new Filter({
+            filters: aFilters,
+            and: true,
+          })
+        );
+      },
+
+      /**
+       * Create supplier button press event handler.
+       *
+       * @async
+       */
+      onCreateSupplierButtonPress: async function () {
+        const oCreateSupplierDialog = await this.getDialog(CREATE_SUPPLIER_DIALOG_NAME);
+
+        oCreateSupplierDialog.open();
+      },
+
+      /**
+       * Delete supplier button press event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onDeleteSupplierButtonPress: function (oEvent) {
+        const oSupplierToRemoveContext = oEvent.getSource().getBindingContext();
+        const oSupplierToRemoveId = oSupplierToRemoveContext.getObject().ID;
+
+        const oSuppliersTableItems = this.byId("idSuppliersTable").getBinding("items");
+        const oRemoveSupplierFilter = new Filter("ID", FilterOperator.NE, oSupplierToRemoveId);
+        const oFilter = new Filter({
+          filters: oSuppliersTableItems.aFilters.concat(oRemoveSupplierFilter),
+          and: true,
+        });
+
+        oSupplierToRemoveContext.delete();
+        oSuppliersTableItems.filter(oFilter);
+      },
+
+      /**
+       * Cancel product editing button press event handler.
+       */
+      onCancelProductEditingButtonPress: function () {
+        const oDataModel = this.getModel();
+
+        oDataModel.resetChanges(null, true, true);
+
+        this.closeEditProductForm();
+      },
+
+      /**
+       * Reset edit mode and close edit product form.
+       */
+      closeEditProductForm: function () {
+        const oSuppliersTableItems = this.byId("idSuppliersTable").getBinding("items");
+        const oSuppliersTableDefaultFilter = oSuppliersTableItems.aFilters[0];
+
+        oSuppliersTableItems.filter(oSuppliersTableDefaultFilter);
+
+        this.oViewModel.setProperty("/IsEditMode", false);
+        this.oViewModel.setProperty("/IsProductFormValid", true);
+      },
 
       /**
        * ProductDataField field group validateFieldGroup event handler.
        */
       onProductDataFieldGroupValidate: function () {
-        this.setProductFormValidity();
-      },
-
-      /**
-       * Set weather product form is valid.
-       */
-      setProductFormValidity: function () {
         const isFieldGroupValid = this.isFieldGroupValid("ProductDataField");
 
         this.oViewModel.setProperty("/IsProductFormValid", isFieldGroupValid);
@@ -311,10 +422,8 @@ sap.ui.define(
        * @returns {*} - Product full data or specified property.
        */
       getProductData: function (sProperty, sInnerProperty) {
-        const sPath = sProperty
-          ? `/Products(guid'${this.sProductId}')/${sProperty}`
-          : `/Products(guid'${this.sProductId}')`;
-
+        const sProductPath = this.getView().getBindingContext().getPath();
+        const sPath = sProperty ? `${sProductPath}/${sProperty}` : sProductPath;
         const vData = this.getModel().getProperty(sPath);
 
         if (!sInnerProperty) {
@@ -326,6 +435,9 @@ sap.ui.define(
             return vData.map((sPath) =>
               this.getModel().getProperty(`/${sPath}/Subcategory${sInnerProperty}`)
             );
+
+          case "Suppliers":
+            return vData.map((sPath) => this.getModel().getProperty(`/${sPath}/Supplier${sInnerProperty}`));
 
           default:
             return vData;

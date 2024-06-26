@@ -3,9 +3,12 @@ sap.ui.define(
     "sap/ui/core/mvc/Controller",
     "productmanagement/products/constant/constant",
     "productmanagement/products/model/i18nModel",
+    "productmanagement/products/helper/helper",
   ],
-  function (Controller, constant, i18nModel) {
+  function (Controller, constant, i18nModel, helper) {
     "use strict";
+
+    const { findClosestParent } = helper;
 
     return Controller.extend("productmanagement.products.controller.BaseController", {
       settingsDialogs: {},
@@ -84,6 +87,8 @@ sap.ui.define(
        * Validates MultiComboBox value not to be empty.
        *
        * @param {sap.ui.base.Event} oEvent - Event object.
+       *
+       * @returns {boolean} - Whether MultiComboBox is valid.
        */
       validateRequiredMultiComboBox: function (oEvent) {
         const oMultiComboBox = oEvent.getSource();
@@ -95,7 +100,7 @@ sap.ui.define(
             property: "selectedKeys",
           });
 
-          return;
+          return true;
         }
 
         oMultiComboBox.fireValidationError({
@@ -103,6 +108,8 @@ sap.ui.define(
           property: "selectedKeys",
           message: this.getLocalizedString("MultiComboBoxValidation.Required"),
         });
+
+        return false;
       },
 
       /**
@@ -230,6 +237,17 @@ sap.ui.define(
           default:
             return "value";
         }
+      },
+
+      /**
+       * Close dialog.
+       *
+       * @param {sap.ui.core.Control} oSource - Method caller.
+       */
+      closeDialog: function (oSource) {
+        const oRelatedDialog = findClosestParent(sap.m.Dialog, oSource);
+
+        oRelatedDialog.close();
       },
 
       /**
