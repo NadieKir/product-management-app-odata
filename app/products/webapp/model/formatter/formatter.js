@@ -64,15 +64,16 @@ sap.ui.define(
       },
 
       /**
-       * Get product subcategories, subcategories properties or concatenated subcategories properties.
+       * Get product subcategories or subcategories properties.
        *
        * @param {Array} aSubcategoriesPaths - Array of subcategories paths.
        * @param {string} sProperty - Subcategory property to get.
-       * @param {boolean} bUseJoin - Whether to join subcategories properties.
        *
-       * @returns {(Array | string)} - Product subcategories, subcategories properties or concatenated subcategories properties.
+       * @returns {Array} - Product subcategories or subcategories properties.
        */
-      getSubcategoriesFormatter: function (aSubcategoriesPaths, sProperty, bUseJoin) {
+      getSubcategoriesFormatter: function (aSubcategoriesPaths, sProperty) {
+        aSubcategoriesPaths = aSubcategoriesPaths?.__list || aSubcategoriesPaths;
+
         if (!Array.isArray(aSubcategoriesPaths)) return [];
 
         const aSubcategories = aSubcategoriesPaths.map((sPath) => {
@@ -81,7 +82,21 @@ sap.ui.define(
           return this.getModel().getProperty(sPath);
         });
 
-        return bUseJoin === "true" ? aSubcategories.join(", ") : aSubcategories;
+        return aSubcategories;
+      },
+
+      /**
+       * Get concatenated product subcategories properties.
+       *
+       * @param {Array} aSubcategoriesPaths - Array of subcategories paths.
+       * @param {string} sProperty - Subcategory property to get.
+       *
+       * @returns {string} - Concatenated product subcategories properties.
+       */
+      getJoinedSubcategoriesFormatter: function (aSubcategoriesPaths, sProperty) {
+        const aSubcategories = formatter.getSubcategoriesFormatter.call(this, aSubcategoriesPaths, sProperty);
+
+        return aSubcategories.join(", ");
       },
     };
 

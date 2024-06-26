@@ -209,7 +209,7 @@
                                     fieldGroupIds="ProductDataField,ProductName"
                                     placeholder="{i18n>ProductNamePlaceholder}"
                                     value="{
-                                        path : 'Name',
+                                        path : 'editableProduct>/Name',
                                         type : 'sap.ui.model.type.String',
                                         constraints : {
                                             minLength: 2
@@ -235,7 +235,7 @@
                                     fieldGroupIds="ProductDataField,Price"
                                     placeholder="{i18n>PricePlaceholder}"
                                     value="{
-                                        path : 'Price',
+                                        path : 'editableProduct>/Price',
                                         type : 'sap.ui.model.type.Float',
                                         formatOptions: { groupingSeparator: '', decimals: 0, decimalSeparator: '.' }
                                     }"
@@ -275,7 +275,7 @@
                                         ]
                                     }"
                                     change="onCategorySelectChange"
-                                    selectedKey="{Category_ID}"
+                                    selectedKey="{editableProduct>/Category_ID}"
                                     visible="{productDetailsView>/IsEditMode}"
                                     required="true"
                                 >
@@ -305,7 +305,7 @@
                                         sorter: { path: 'Name' }
                                     }"
                                     selectedKeys="{
-                                        parts: [{ path: 'Subcategories' }, { value: 'ID' }],                                 
+                                        parts: [{ path: 'editableProduct>/Subcategories' }, { value: 'ID' }],                                 
                                         formatter: '.formatter.getSubcategoriesFormatter'
                                     }"
                                     visible="{productDetailsView>/IsEditMode}"
@@ -319,8 +319,8 @@
                                 </m:MultiComboBox>
                                 <m:Text
                                     text="{ 
-                                        parts: [{ path: 'Subcategories' }, { value: 'Name' }, { value: 'true' }],                                 
-                                        formatter: '.formatter.getSubcategoriesFormatter'
+                                        parts: [{ path: 'Subcategories' }, { value: 'Name' }],                                 
+                                        formatter: '.formatter.getJoinedSubcategoriesFormatter'
                                     }"
                                     emptyIndicatorMode='On'
                                     visible="{= !${productDetailsView>/IsEditMode}}"
@@ -338,13 +338,13 @@
                                     placeholder="{i18n>DescriptionPlaceholder}"
                                     width="100%"
                                     value="{
-                                    path : 'Description',
-                                    type : 'sap.ui.model.type.String',
-                                    constraints : {
-                                        minLength: 3,
-                                        maxLength: 100
-                                    }
-                                }"
+                                        path : 'editableProduct>/Description',
+                                        type : 'sap.ui.model.type.String',
+                                        constraints : {
+                                            minLength: 3,
+                                            maxLength: 100
+                                        }
+                                    }"
                                     growing="true"
                                     visible="{productDetailsView>/IsEditMode}"
                                     required="true"
@@ -365,7 +365,7 @@
                                     name="ReleaseDate"
                                     fieldGroupIds="ProductDataField,ReleaseDate"
                                     value="{
-                                        path: 'ReleaseDate',
+                                        path: 'editableProduct>/ReleaseDate',
                                         type: 'custom.type.RequiredDate'
                                     }"
                                     maxDate="{productDetailsView>/MaxReleaseDate}"
@@ -389,7 +389,7 @@
                                     name="DiscountDate"
                                     fieldGroupIds="ProductDataField,DiscountDate"
                                     value="{
-                                        path: 'DiscountDate',
+                                        path: 'editableProduct>/DiscountDate',
                                         type: 'sap.ui.model.type.Date'
                                     }"
                                     maxDate="{productDetailsView>/MaxDiscountDate}"
@@ -410,7 +410,7 @@
                             <l:VerticalLayout>
                                 <m:RatingIndicator
                                     fieldGroupIds="ProductDataField,Rating"
-                                    value="{Rating}"
+                                    value="{editableProduct>/Rating}"
                                     displayOnly="false"
                                     visible="{productDetailsView>/IsEditMode}"
                                 />
