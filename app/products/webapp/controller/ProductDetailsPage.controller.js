@@ -137,6 +137,10 @@ sap.ui.define(
        * Set page to edit mode.
        */
       setEditMode: function () {
+        const oProductClone = structuredClone(this.getProductData());
+
+        this.getView().setModel(new JSONModel(oProductClone), "editableProduct");
+
         const oCurrentDate = new Date();
         const sProductReleaseDate = this.getProductData("ReleaseDate");
         const sProductCategoryId = this.getProductData("Category_ID");
@@ -163,22 +167,49 @@ sap.ui.define(
           return;
         }
 
-        const oDataModel = this.getModel();
+        const oDataModel = this.getModel(),
+          oEditableProductModel = this.getModel("editableProduct");
 
-        this.updateProductSubcategories();
+        const oCurrentProductContext = this.getView().getBindingContext(),
+          oCurrentProduct = oCurrentProductContext.getObject();
+
+        for (let sKey in oCurrentProduct) {
+          switch (sKey) {
+            case "Subcategories":
+              this.updateProductSubcategories();
+
+              break;
+            case "Category":
+            case "Suppliers":
+            case "Comments":
+              break;
+            default:
+              const vOriginalValue = oDataModel.getProperty(sKey, oCurrentProductContext);
+              const vNewValue = oEditableProductModel.getProperty(`/${sKey}`);
+
+              if (vOriginalValue !== vNewValue) {
+                oDataModel.setProperty(sKey, vNewValue, oCurrentProductContext);
+              }
+          }
+        }
 
         oDataModel.submitChanges({
-          success: () => {
-            MessageToast.show(this.getLocalizedString("SaveProductSuccess"));
-          },
-          error: () => {
-            MessageToast.show(this.getLocalizedString("SaveProductError"));
-          },
+          success: () => this.onSaveProductSuccess(),
+          error: () => MessageToast.show(this.getLocalizedString("SaveProductError")),
         });
+      },
+
+      /**
+       * Save product success event handler.
+       */
+      onSaveProductSuccess: function () {
+        const oDataModel = this.getModel();
 
         oDataModel.refresh(true);
 
         this.closeEditProductForm();
+
+        MessageToast.show(this.getLocalizedString("SaveProductSuccess"));
       },
 
       /**

@@ -73,6 +73,8 @@ sap.ui.define(
        * @returns {(Array | string)} - Product subcategories, subcategories properties or concatenated subcategories properties.
        */
       getSubcategoriesFormatter: function (aSubcategoriesPaths, sProperty, bUseJoin) {
+        if (aSubcategoriesPaths?.__list) aSubcategoriesPaths = aSubcategoriesPaths.__list;
+
         if (!Array.isArray(aSubcategoriesPaths)) return [];
 
         const aSubcategories = aSubcategoriesPaths.map((sPath) => {
