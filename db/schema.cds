@@ -25,7 +25,7 @@ entity Comments : cuid {
         Product : Association to Products;
         Text    : String;
         Author  : String;
-        Date    : String;
+        Date    : DateTime default $now;
 }
 
 entity ProductsSubcategories : cuid {

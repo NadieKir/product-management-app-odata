@@ -529,7 +529,39 @@
                 visible="{= !${productDetailsView>/IsCreateMode}}"
             >
                 <ObjectPageSubSection>
-                    <m:Text text="Comments" />
+                    <m:VBox>
+                        <m:FeedInput
+                            id="idProductCommentField"
+                            class="sapUiSmallMarginBottom sapUiTinyMarginTop"
+                            post="onCommentPost"
+                            showIcon="false"
+                            placeholder="{i18n>CommentPlaceholder}"
+                            visible="{= !${productDetailsView>/IsEditMode}}"
+                        />
+                        <m:List
+                            id="idCommentsList"
+                            showSeparators="Inner"
+                            items="{
+                                path: 'Comments',
+                                sorter: { path: 'Date', descending: true }
+                            }"
+                            noDataText='{i18n>ProductCommentsNoDataText}'
+                        >
+                            <m:FeedListItem
+                                showIcon="false"
+                                sender="{Author}"
+                                senderActive="false"
+                                timestamp="{
+                                    path: 'Date',
+                                    type: 'sap.ui.model.type.DateTime',
+                                    formatOptions: {
+                                        style: 'short'
+                                    }
+                                }"
+                                text="{Text}"
+                            />
+                        </m:List>
+                    </m:VBox>
                 </ObjectPageSubSection>
             </ObjectPageSection>
         </sections>
