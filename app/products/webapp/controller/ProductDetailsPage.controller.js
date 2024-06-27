@@ -8,6 +8,7 @@ sap.ui.define(
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "productmanagement/products/model/formatter/formatter",
+    "productmanagement/products/model/userModel",
     "productmanagement/products/constant/constant",
   ],
   function (
@@ -19,6 +20,7 @@ sap.ui.define(
     Filter,
     FilterOperator,
     formatter,
+    userModel,
     constant
   ) {
     "use strict";
@@ -441,6 +443,28 @@ sap.ui.define(
         const isFieldGroupValid = this.isFieldGroupValid("ProductDataField");
 
         this.oViewModel.setProperty("/IsProductFormValid", isFieldGroupValid);
+      },
+
+      /**
+       * Comment post event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onCommentPost: function (oEvent) {
+        const oDataModel = this.getModel();
+        const sCommentText = oEvent.getParameter("value");
+        const sAuthorName = userModel.getModel().getProperty("/Name");
+
+        const oPayload = {
+          Product_ID: this.sProductId,
+          Text: sCommentText,
+          Author: sAuthorName,
+        };
+
+        oDataModel.create("/Comments", oPayload, {
+          success: () => MessageToast.show(this.getLocalizedString("CreateCommentSuccess")),
+          error: () => MessageBox.error(this.getLocalizedString("CreateCommentError")),
+        });
       },
 
       /**
