@@ -4,6 +4,7 @@ sap.ui.define(
     "productmanagement/products/controller/fragments/SelectSuppliersDialog",
     "productmanagement/products/controller/fragments/CreateSupplierDialog",
     "sap/ui/model/json/JSONModel",
+    "sap/m/MessageBox",
     "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
@@ -16,6 +17,7 @@ sap.ui.define(
     SelectSuppliersDialog,
     CreateSupplierDialog,
     JSONModel,
+    MessageBox,
     MessageToast,
     Filter,
     FilterOperator,
@@ -47,7 +49,6 @@ sap.ui.define(
        */
       onPatternMatched: function (oEvent) {
         this.setDefaultViewModel();
-        this.byId("idProductPage").setVisible(true);
 
         const sProductId = oEvent.getParameter("arguments").productId;
 
@@ -464,6 +465,49 @@ sap.ui.define(
         oDataModel.create("/Comments", oPayload, {
           success: () => MessageToast.show(this.getLocalizedString("CreateCommentSuccess")),
           error: () => MessageBox.error(this.getLocalizedString("CreateCommentError")),
+        });
+      },
+
+      /**
+       * Delete product button press event handler.
+       */
+      onDeleteProductButtonPress: function () {
+        const sProductName = this.getProductData("Name");
+
+        MessageBox.confirm(this.getLocalizedString("DeleteConfirmationText", sProductName), {
+          emphasizedAction: MessageBox.Action.OK,
+          onClose: (sAction) => this.onDeleteProductConfirmationClose(sAction),
+        });
+      },
+
+      /**
+       * Delete confirmation popup close event handler.
+       *
+       * @param {sap.m.MessageBox.Action} sAction - Chosen delete confirmation popup action.
+       */
+      onDeleteProductConfirmationClose: function (sAction) {
+        if (sAction === MessageBox.Action.OK) {
+          const oDataModel = this.getView().getModel();
+          const sKey = oDataModel.createKey("/Products", { ID: this.sProductId });
+
+          oDataModel.remove(sKey, {
+            success: () => this.onDeleteProductSuccess(),
+            error: () =>
+              MessageToast.show(this.getLocalizedString("DeleteProductsError.Singular"), {
+                closeOnBrowserNavigation: false,
+              }),
+          });
+        }
+      },
+
+      /**
+       * Remove product success event handler.
+       */
+      onDeleteProductSuccess: function () {
+        this.getRouter().navTo("ProductsOverviewPage");
+
+        MessageToast.show(this.getLocalizedString("DeleteProductsSuccess.Singular"), {
+          closeOnBrowserNavigation: false,
         });
       },
 
