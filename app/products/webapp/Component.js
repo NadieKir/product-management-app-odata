@@ -8,7 +8,7 @@ sap.ui.define(
   function (UIComponent, i18nModel, constant) {
     "use strict";
 
-    const { CREATE_SUPPLIER_GROUP } = constant;
+    const { O_DATA_DEFERRED_GROUPS } = constant;
 
     return UIComponent.extend("productmanagement.products.Component", {
       metadata: {
@@ -34,9 +34,8 @@ sap.ui.define(
       configureODataModel: function () {
         const oDataModel = this.getModel();
         const aDefaultDeferredGroups = oDataModel.getDeferredGroups();
-        const aDeferredGroups = [CREATE_SUPPLIER_GROUP];
 
-        oDataModel.setDeferredGroups(aDefaultDeferredGroups.concat(aDeferredGroups));
+        oDataModel.setDeferredGroups(aDefaultDeferredGroups.concat(O_DATA_DEFERRED_GROUPS));
       },
     });
   }

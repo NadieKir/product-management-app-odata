@@ -493,7 +493,7 @@ sap.ui.define(
           oDataModel.remove(sKey, {
             success: () => this.onDeleteProductSuccess(),
             error: () =>
-              MessageToast.show(this.getLocalizedString("DeleteProductsError.Singular"), {
+              MessageToast.show(this.getLocalizedString("DeleteProductError.Singular"), {
                 closeOnBrowserNavigation: false,
               }),
           });
@@ -506,7 +506,7 @@ sap.ui.define(
       onDeleteProductSuccess: function () {
         this.getRouter().navTo("ProductsOverviewPage");
 
-        MessageToast.show(this.getLocalizedString("DeleteProductsSuccess.Singular"), {
+        MessageToast.show(this.getLocalizedString("DeleteProductSuccess.Singular"), {
           closeOnBrowserNavigation: false,
         });
       },
