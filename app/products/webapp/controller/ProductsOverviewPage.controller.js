@@ -27,7 +27,7 @@ sap.ui.define(
   ) {
     "use strict";
 
-    const { DEFAULT_PRODUCTS_SORTER, SORT_DIALOG_NAME, GROUP_DIALOG_NAME } = constant;
+    const { DEFAULT_PRODUCTS_SORTER, SORT_DIALOG_NAME, GROUP_DIALOG_NAME, DELETE_PRODUCTS_GROUP } = constant;
 
     return BaseController.extend("productmanagement.products.controller.ProductsOverviewPage", {
       formatter,
@@ -86,7 +86,6 @@ sap.ui.define(
        */
       onDeleteProductButtonPress: function () {
         const aProductsToDelete = this.oViewModel.getProperty("/SelectedProducts");
-        const aProductsToDeleteIds = aProductsToDelete.map((oProduct) => oProduct.ID);
         const sProductsToDeleteInfo =
           aProductsToDelete.length === 1
             ? aProductsToDelete[0].Name
@@ -94,8 +93,7 @@ sap.ui.define(
 
         MessageBox.confirm(this.getLocalizedString("DeleteConfirmationText", sProductsToDeleteInfo), {
           emphasizedAction: MessageBox.Action.OK,
-          onClose: (sAction) =>
-            this.onDeleteProductConfirmationClose(sAction, aProductsToDeleteIds, sProductsToDeleteInfo),
+          onClose: (sAction) => this.onDeleteProductConfirmationClose(sAction),
         });
       },
 
@@ -103,19 +101,36 @@ sap.ui.define(
        * Delete confirmation popup close event handler.
        *
        * @param {sap.m.MessageBox.Action} sAction - Chosen delete confirmation popup action.
-       * @param {string[]} aProductsToDeleteIds - Ids of products to delete.
-       * @param {string} sProductsToDeleteInfo - Information about products to delete (its name or their amount).
        */
-      onDeleteProductConfirmationClose: function (sAction, aProductsToDeleteIds, sProductsToDeleteInfo) {
+      onDeleteProductConfirmationClose: function (sAction) {
         if (sAction === MessageBox.Action.OK) {
-          const sMessageToastText = this.getLocalizedString(
-            aProductsToDeleteIds.length === 1 ? "DeleteConfirmedText.Singular" : "DeleteConfirmedText.Plural",
-            sProductsToDeleteInfo
-          );
+          const oDataModel = this.getView().getModel();
+          const aProductsToDelete = this.oViewModel.getProperty("/SelectedProducts");
+          const bIsSingleProductToDelete = aProductsToDelete.length === 1;
 
-          console.log("delete product");
+          aProductsToDelete.forEach((oProduct) => {
+            const sKey = oDataModel.createKey("/Products", { ID: oProduct.ID });
 
-          MessageToast.show(sMessageToastText);
+            oDataModel.remove(sKey, {
+              groupId: DELETE_PRODUCTS_GROUP,
+            });
+          });
+
+          oDataModel.submitChanges({
+            groupId: DELETE_PRODUCTS_GROUP,
+            success: () =>
+              MessageToast.show(
+                bIsSingleProductToDelete
+                  ? this.getLocalizedString("DeleteProductSuccess.Singular")
+                  : this.getLocalizedString("DeleteProductSuccess.Plural")
+              ),
+            error: () =>
+              MessageToast.show(
+                bIsSingleProductToDelete
+                  ? this.getLocalizedString("DeleteProductError.Singular")
+                  : this.getLocalizedString("DeleteProductError.Plural")
+              ),
+          });
         }
       },
 
