@@ -7,7 +7,7 @@ sap.ui.define(
   function (countriesService, countriesModel, constant) {
     "use strict";
 
-    const { CREATE_SUPPLIER_GROUP } = constant;
+    const { CREATE_SUPPLIER_GROUP, ADD_SUPPLIER_GROUP } = constant;
 
     return {
       /**
@@ -94,7 +94,8 @@ sap.ui.define(
             Supplier_ID: this.oNewSupplier.ID,
             Supplier: this.oNewSupplier,
           },
-          true
+          true,
+          { groupId: ADD_SUPPLIER_GROUP }
         );
 
         this.closeDialog(oSource);
