@@ -325,6 +325,8 @@ sap.ui.define(
         const oSelect = oEvent.getSource();
         const sSelectedCategoryId = oSelect.getSelectedKey();
 
+        this.validateRequiredSelect(oEvent);
+
         this.clearSubcategoriesMultiComboBoxSelectedItems();
         this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
       },
