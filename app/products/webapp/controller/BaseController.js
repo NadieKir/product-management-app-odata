@@ -225,6 +225,9 @@ sap.ui.define(
         const sFilterFieldControlName = oField.getMetadata().getName();
 
         switch (sFilterFieldControlName) {
+          case "sap.m.Select":
+            return "selectedKey";
+
           case "sap.m.MultiComboBox":
             return "selectedKeys";
 

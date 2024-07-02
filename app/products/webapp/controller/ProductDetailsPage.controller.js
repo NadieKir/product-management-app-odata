@@ -70,7 +70,6 @@ sap.ui.define(
        */
       setCreateMode: function () {
         const oView = this.getView();
-        const oCategorySelect = this.byId("idProductCategorySelect");
         const oDataModel = oView.getModel();
         const oEntry = oDataModel.createEntry("/Products", {
           properties: {
@@ -92,30 +91,11 @@ sap.ui.define(
 
         this.setProductSuppliersTableItems(null);
 
-        if (oCategorySelect.getFirstItem()) {
-          this.onCategorySelectItemsReceived();
-        } else {
-          oCategorySelect.getBinding("items").attachDataReceived(() => this.onCategorySelectItemsReceived());
-        }
-
         this.oViewModel.setProperty("/MaxReleaseDate", new Date());
         this.oViewModel.setProperty("/MaxDiscountDate", new Date());
 
         this.oViewModel.setProperty("/IsEditMode", true);
         this.oViewModel.setProperty("/IsCreateMode", true);
-      },
-
-      /**
-       * Product category select items dataReceived event handler.
-       */
-      onCategorySelectItemsReceived: function () {
-        const oCategorySelect = this.byId("idProductCategorySelect");
-        const sProductCategoryId = oCategorySelect.getFirstItem().getKey();
-        const oProductContext = this.getView().getBindingContext();
-
-        oProductContext.setProperty("Category_ID", sProductCategoryId);
-
-        this.setSubcategoriesMultiComboBoxItems(sProductCategoryId);
       },
 
       /**
