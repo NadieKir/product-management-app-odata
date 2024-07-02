@@ -72,6 +72,29 @@ sap.ui.define(["productmanagement/products/constant/constant"], (constant) => {
 
       return null;
     },
+
+    /**
+     * Get highest message severity.
+     *
+     * @param {sap.ui.core.message.Message[]} aMessages - Messages.
+     *
+     * @returns {sap.ui.core.message.MessageType} - Message severity.
+     */
+    getHighestMessageSeverity: function (aMessages) {
+      if (aMessages.some((oMessage) => oMessage.type === "Error")) {
+        return "Error";
+      }
+
+      if (aMessages.some((oMessage) => oMessage.type === "Warning")) {
+        return "Warning";
+      }
+
+      if (aMessages.some((oMessage) => oMessage.type === "Success")) {
+        return "Success";
+      }
+
+      return "Information";
+    },
   };
 
   return helper;

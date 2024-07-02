@@ -4,6 +4,9 @@ sap.ui.define(
     "productmanagement/products/controller/fragments/SelectSuppliersDialog",
     "productmanagement/products/controller/fragments/CreateSupplierDialog",
     "sap/ui/model/json/JSONModel",
+    "sap/m/MessagePopover",
+    "sap/m/MessageItem",
+    "sap/ui/core/Messaging",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
     "sap/ui/core/routing/HashChanger",
@@ -12,12 +15,16 @@ sap.ui.define(
     "productmanagement/products/model/formatter/formatter",
     "productmanagement/products/model/userModel",
     "productmanagement/products/constant/constant",
+    "productmanagement/products/helper/helper",
   ],
   function (
     BaseController,
     SelectSuppliersDialog,
     CreateSupplierDialog,
     JSONModel,
+    MessagePopover,
+    MessageItem,
+    Messaging,
     MessageBox,
     MessageToast,
     HashChanger,
@@ -25,11 +32,13 @@ sap.ui.define(
     FilterOperator,
     formatter,
     userModel,
-    constant
+    constant,
+    helper
   ) {
     "use strict";
 
     const { SUPPLIERS_DIALOG_NAME, CREATE_SUPPLIER_DIALOG_NAME, ADD_SUPPLIER_GROUP } = constant;
+    const { findClosestParent } = helper;
 
     return BaseController.extend("productmanagement.products.controller.ProductDetailsPage", {
       formatter,
@@ -42,6 +51,8 @@ sap.ui.define(
        */
       onInit: function () {
         this.getRouter().getRoute("ProductDetailsPage").attachPatternMatched(this.onPatternMatched, this);
+
+        this.initializeMessageManager();
       },
 
       /**
@@ -666,6 +677,80 @@ sap.ui.define(
           default:
             return vData;
         }
+      },
+
+      /**
+       * Initialize message manager.
+       */
+      initializeMessageManager: function () {
+        const oPage = this.byId("idProductPage");
+
+        Messaging.removeAllMessages();
+        Messaging.registerObject(oPage, true);
+
+        this.getView().setModel(Messaging.getMessageModel(), "message");
+      },
+
+      /**
+       * Message popover button press event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onMessagePopoverButtonPress: function (oEvent) {
+        const oSourceButton = oEvent.getSource();
+
+        if (!this.oMessagePopover) {
+          this.createMessagePopover();
+        }
+
+        this.oMessagePopover.toggle(oSourceButton);
+      },
+
+      /**
+       * Active message popover title press event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onActiveMessagePopoverTitlePress: function (oEvent) {
+        const oPressedItem = oEvent.getParameter("item");
+        const oMessageData = oPressedItem.getBindingContext("message").getObject();
+        const oSourceControl = sap.ui.getCore().byId(oMessageData.getControlId());
+
+        if (oSourceControl) {
+          const oPage = this.byId("idProductPage");
+          const oParentSection = findClosestParent(sap.uxap.ObjectPageSubSection, oSourceControl);
+
+          oPage.scrollToSection(oParentSection.getId());
+
+          this.oMessagePopover.close();
+        }
+      },
+
+      /**
+       * Create MessagePopover instance.
+       */
+      createMessagePopover: function () {
+        const that = this;
+
+        this.oMessagePopover = new MessagePopover({
+          activeTitlePress: this.onActiveMessagePopoverTitlePress.bind(that),
+          items: {
+            path: "message>/",
+            template: new MessageItem({
+              title: "{message>message}",
+              subtitle: "{message>additionalText}",
+              groupName: {
+                path: "message>controlIds",
+                formatter: formatter.messagePopoverGroupNameFormatter,
+              },
+              activeTitle: true,
+              type: "{message>type}",
+            }),
+          },
+          groupItems: true,
+        });
+
+        this.byId("idMessagePopoverButton").addDependent(this.oMessagePopover);
       },
     });
   }
