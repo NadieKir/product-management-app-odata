@@ -263,6 +263,8 @@
                                     id="idProductCategorySelect"
                                     name="Category"
                                     fieldGroupIds="ProductDataField,Category"
+                                    forceSelection="false"
+                                    width="100%"
                                     items="{
                                         path: '/Categories',
                                         sorter: { path: 'Name' },
@@ -310,6 +312,7 @@
                                     }"
                                     visible="{productDetailsView>/IsEditMode}"
                                     selectionChange="onSubcategoriesMultiComboBoxChange"
+                                    enabled="{= !!${editableProduct>/Category_ID}}"
                                     required="true"
                                 >
                                     <core:Item
