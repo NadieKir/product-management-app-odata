@@ -84,6 +84,35 @@ sap.ui.define(
       },
 
       /**
+       * Validates Select value not to be empty.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       *
+       * @returns {boolean} - Whether Select is valid.
+       */
+      validateRequiredSelect: function (oEvent) {
+        const oSelect = oEvent.getSource();
+        const oSelectedKey = oSelect.getSelectedKey();
+
+        if (oSelectedKey) {
+          oSelect.fireValidationSuccess({
+            element: oSelect,
+            property: "selectedKey",
+          });
+
+          return true;
+        }
+
+        oSelect.fireValidationError({
+          element: oSelect,
+          property: "selectedKey",
+          message: this.getLocalizedString("InputValidation.Required"),
+        });
+
+        return false;
+      },
+
+      /**
        * Validates MultiComboBox value not to be empty.
        *
        * @param {sap.ui.base.Event} oEvent - Event object.
@@ -122,7 +151,7 @@ sap.ui.define(
       validateRequiredFieldsToBeFilled: function (aControls) {
         const aRequiredControls = aControls.filter((oControl) => {
           try {
-            return oControl.getProperty("required");
+            return oControl.getProperty("required") && oControl.getProperty("enabled");
           } catch {
             return false;
           }
@@ -225,6 +254,9 @@ sap.ui.define(
         const sFilterFieldControlName = oField.getMetadata().getName();
 
         switch (sFilterFieldControlName) {
+          case "sap.m.Select":
+            return "selectedKey";
+
           case "sap.m.MultiComboBox":
             return "selectedKeys";
 

@@ -17,9 +17,10 @@ sap.ui.define([], () => {
   const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24;
 
   const CREATE_SUPPLIER_GROUP = "CreateSupplierGroup";
+  const ADD_SUPPLIER_GROUP = "AddSupplierGroup";
   const DELETE_PRODUCTS_GROUP = "DeleteProductsGroup";
 
-  const O_DATA_DEFERRED_GROUPS = [CREATE_SUPPLIER_GROUP, DELETE_PRODUCTS_GROUP];
+  const O_DATA_DEFERRED_GROUPS = [CREATE_SUPPLIER_GROUP, DELETE_PRODUCTS_GROUP, ADD_SUPPLIER_GROUP];
 
   return {
     DEFAULT_PRODUCTS_SORTER,

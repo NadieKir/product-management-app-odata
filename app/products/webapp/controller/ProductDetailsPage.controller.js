@@ -6,6 +6,7 @@ sap.ui.define(
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
+    "sap/ui/core/routing/HashChanger",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "productmanagement/products/model/formatter/formatter",
@@ -19,6 +20,7 @@ sap.ui.define(
     JSONModel,
     MessageBox,
     MessageToast,
+    HashChanger,
     Filter,
     FilterOperator,
     formatter,
@@ -27,7 +29,7 @@ sap.ui.define(
   ) {
     "use strict";
 
-    const { SUPPLIERS_DIALOG_NAME, CREATE_SUPPLIER_DIALOG_NAME } = constant;
+    const { SUPPLIERS_DIALOG_NAME, CREATE_SUPPLIER_DIALOG_NAME, ADD_SUPPLIER_GROUP } = constant;
 
     return BaseController.extend("productmanagement.products.controller.ProductDetailsPage", {
       formatter,
@@ -53,7 +55,7 @@ sap.ui.define(
         const sProductId = oEvent.getParameter("arguments").productId;
 
         if (sProductId === "create") {
-          this.oViewModel.setProperty("/IsCreateMode", true);
+          this.setCreateMode();
 
           return;
         }
@@ -61,6 +63,39 @@ sap.ui.define(
         this.bindProductToView(sProductId);
 
         this.sProductId = sProductId;
+      },
+
+      /**
+       * Set page to create mode.
+       */
+      setCreateMode: function () {
+        const oView = this.getView();
+        const oDataModel = oView.getModel();
+        const oEntry = oDataModel.createEntry("/Products", {
+          properties: {
+            Name: null,
+            Description: null,
+            Rating: null,
+            ReleaseDate: null,
+            DiscountDate: null,
+            Price: null,
+            Image: null,
+            Category_ID: null,
+          },
+          success: (oData) => (this.sProductId = oData.ID),
+        });
+
+        oView.unbindObject();
+        oView.setBindingContext(oEntry);
+        oView.setModel(new JSONModel(oEntry.getObject()), "editableProduct");
+
+        this.setProductSuppliersTableItems(null);
+
+        this.oViewModel.setProperty("/MaxReleaseDate", new Date());
+        this.oViewModel.setProperty("/MaxDiscountDate", new Date());
+
+        this.oViewModel.setProperty("/IsEditMode", true);
+        this.oViewModel.setProperty("/IsCreateMode", true);
       },
 
       /**
@@ -141,18 +176,16 @@ sap.ui.define(
        */
       setEditMode: function () {
         const oProductClone = structuredClone(this.getProductData());
-
-        this.getView().setModel(new JSONModel(oProductClone), "editableProduct");
-
-        const oCurrentDate = new Date();
         const sProductReleaseDate = this.getProductData("ReleaseDate");
         const sProductCategoryId = this.getProductData("Category_ID");
 
+        this.getView().setModel(new JSONModel(oProductClone), "editableProduct");
+
         this.setSubcategoriesMultiComboBoxItems(sProductCategoryId);
 
-        this.oViewModel.setProperty("/MaxReleaseDate", oCurrentDate);
+        this.oViewModel.setProperty("/MaxReleaseDate", new Date());
         this.oViewModel.setProperty("/MinDiscountDate", sProductReleaseDate);
-        this.oViewModel.setProperty("/MaxDiscountDate", oCurrentDate);
+        this.oViewModel.setProperty("/MaxDiscountDate", new Date());
 
         this.oViewModel.setProperty("/IsEditMode", true);
       },
@@ -170,10 +203,48 @@ sap.ui.define(
           return;
         }
 
+        const oCurrentProductContext = this.getView().getBindingContext();
+
+        if (this.oViewModel.getProperty("/IsCreateMode") === true) {
+          this.createProduct(oCurrentProductContext);
+
+          return;
+        }
+
+        this.updateProduct(oCurrentProductContext);
+      },
+
+      /**
+       * Create product.
+       *
+       * @param {sap.ui.model.Binding} oProductContext - Product to create context.
+       */
+      createProduct: function (oProductContext) {
         const oDataModel = this.getModel();
         const oEditableProductModel = this.getModel("editableProduct");
-        const oCurrentProductContext = this.getView().getBindingContext();
-        const oCurrentProduct = oCurrentProductContext.getObject();
+        const oCurrentProduct = oProductContext.getObject();
+
+        for (let sKey in oCurrentProduct) {
+          const vValue = oEditableProductModel.getProperty(`/${sKey}`);
+
+          oDataModel.setProperty(sKey, vValue, oProductContext);
+        }
+
+        oDataModel.submitChanges({
+          success: () => this.onCreateProductSuccess(),
+          error: () => MessageToast.show(this.getLocalizedString("SaveProductError")),
+        });
+      },
+
+      /**
+       * Update product.
+       *
+       * @param {sap.ui.model.Binding} oProductContext - Product to update context.
+       */
+      updateProduct: function (oProductContext) {
+        const oDataModel = this.getModel();
+        const oEditableProductModel = this.getModel("editableProduct");
+        const oCurrentProduct = oProductContext.getObject();
 
         for (let sKey in oCurrentProduct) {
           switch (sKey) {
@@ -186,17 +257,17 @@ sap.ui.define(
             case "Comments":
               break;
             default:
-              const vOriginalValue = oDataModel.getProperty(sKey, oCurrentProductContext);
+              const vOriginalValue = oDataModel.getProperty(sKey, oProductContext);
               const vNewValue = oEditableProductModel.getProperty(`/${sKey}`);
 
               if (vOriginalValue !== vNewValue) {
-                oDataModel.setProperty(sKey, vNewValue, oCurrentProductContext);
+                oDataModel.setProperty(sKey, vNewValue, oProductContext);
               }
           }
         }
 
         oDataModel.submitChanges({
-          success: () => this.onSaveProductSuccess(),
+          success: () => this.onUpdateProductSuccess(),
           error: () => MessageToast.show(this.getLocalizedString("SaveProductError")),
         });
       },
@@ -204,14 +275,45 @@ sap.ui.define(
       /**
        * Save product success event handler.
        */
-      onSaveProductSuccess: function () {
+      onCreateProductSuccess: function () {
+        const aSelectedSubcategoriesIds = this.byId("idProductSubcategoriesMultiComboBox").getSelectedKeys();
+
+        this.addSubcategories(aSelectedSubcategoriesIds);
+        this.addSuppliersToNewProduct();
+
+        MessageToast.show(this.getLocalizedString("SaveProductSuccess"));
+        HashChanger.getInstance().replaceHash(`products/${this.sProductId}`);
+      },
+
+      /**
+       * Add all suppliers from suppliers table to created (new) product.
+       */
+      addSuppliersToNewProduct: function () {
+        const oDataModel = this.getModel();
+        const aSuppliersContexts = this.byId("idSuppliersTable")
+          .getItems()
+          .map((oItem) => oItem.getBindingContext());
+
+        aSuppliersContexts.forEach((oSupplierContext) =>
+          oSupplierContext.setProperty("Product_ID", this.sProductId)
+        );
+
+        oDataModel.submitChanges({
+          groupId: ADD_SUPPLIER_GROUP,
+        });
+      },
+
+      /**
+       * Update product success event handler.
+       */
+      onUpdateProductSuccess: function () {
         const oDataModel = this.getModel();
 
         oDataModel.refresh(true);
 
-        this.closeEditProductForm();
-
         MessageToast.show(this.getLocalizedString("SaveProductSuccess"));
+
+        this.closeEditProductForm();
       },
 
       /**
@@ -222,6 +324,8 @@ sap.ui.define(
       onCategorySelectChange: function (oEvent) {
         const oSelect = oEvent.getSource();
         const sSelectedCategoryId = oSelect.getSelectedKey();
+
+        this.validateRequiredSelect(oEvent);
 
         this.clearSubcategoriesMultiComboBoxSelectedItems();
         this.setSubcategoriesMultiComboBoxItems(sSelectedCategoryId);
@@ -267,13 +371,14 @@ sap.ui.define(
        */
       updateProductSubcategories: function () {
         const aSelectedSubcategoriesIds = this.byId("idProductSubcategoriesMultiComboBox").getSelectedKeys();
-        const aProductSubcategoriesIds = this.getProductData("Subcategories", "/ID");
+        const aProductSubcategoriesIds = this.getProductData("Subcategories", "/ID") || [];
+        const aProductSubcategories = this.getProductData("Subcategories") || [];
 
         const aSubcategoriesToAdd = aSelectedSubcategoriesIds.filter(
           (sSubcategoryId) => !aProductSubcategoriesIds.includes(sSubcategoryId)
         );
 
-        const aSubcategoriesToRemove = this.getProductData("Subcategories").filter((sSubcategoryPath) => {
+        const aSubcategoriesToRemove = aProductSubcategories.filter((sSubcategoryPath) => {
           const sId = this.getModel().getProperty("/" + sSubcategoryPath + "/Subcategory/ID");
 
           return !aSelectedSubcategoriesIds.includes(sId);
@@ -420,7 +525,9 @@ sap.ui.define(
         const oDataModel = this.getModel();
 
         oDataModel.resetChanges(null, true, true);
-
+        if (this.oViewModel.getProperty("/IsCreateMode")) {
+          this.getRouter().navTo("ProductsOverviewPage");
+        }
         this.closeEditProductForm();
       },
 
@@ -433,6 +540,7 @@ sap.ui.define(
 
         oSuppliersTableItems.filter(oSuppliersTableDefaultFilter);
 
+        this.oViewModel.setProperty("/IsCreateMode", false);
         this.oViewModel.setProperty("/IsEditMode", false);
         this.oViewModel.setProperty("/IsProductFormValid", true);
       },
@@ -530,12 +638,12 @@ sap.ui.define(
 
         switch (sProperty) {
           case "Subcategories":
-            return vData.map((sPath) =>
+            return vData?.map((sPath) =>
               this.getModel().getProperty(`/${sPath}/Subcategory${sInnerProperty}`)
             );
 
           case "Suppliers":
-            return vData.map((sPath) => this.getModel().getProperty(`/${sPath}/Supplier${sInnerProperty}`));
+            return vData?.map((sPath) => this.getModel().getProperty(`/${sPath}/Supplier${sInnerProperty}`));
 
           default:
             return vData;

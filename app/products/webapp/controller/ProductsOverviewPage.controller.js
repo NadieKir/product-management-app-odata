@@ -82,6 +82,15 @@ sap.ui.define(
       },
 
       /**
+       * Create product button press event handler.
+       */
+      onCreateProductButtonPress: function () {
+        this.getRouter().navTo("ProductDetailsPage", {
+          productId: "create",
+        });
+      },
+
+      /**
        * Delete product button press event handler.
        */
       onDeleteProductButtonPress: function () {
