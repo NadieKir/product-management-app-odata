@@ -575,17 +575,17 @@
                     id="idMessagePopoverButton"
                     visible="{= !!${message>/}.length}"
                     type="{ 
-                    path: 'message>/', 
-                    formatter: '.formatter.messagePopoverButtonTypeFormatter' 
-                }"
+                        path: 'message>/', 
+                        formatter: '.formatter.messagePopoverButtonTypeFormatter' 
+                    }"
                     icon="{ 
-                    path: 'message>/',  
-                    formatter: '.formatter.messagePopoverButtonIconFormatter' 
-                }"
+                        path: 'message>/',  
+                        formatter: '.formatter.messagePopoverButtonIconFormatter' 
+                    }"
                     text="{ 
-                    path: 'message>/', 
-                    formatter: '.formatter.highestSeverityMessagesAmountFormatter' 
-                }"
+                        path: 'message>/', 
+                        formatter: '.formatter.highestSeverityMessagesAmountFormatter' 
+                    }"
                     press="onMessagePopoverButtonPress"
                     ariaHasPopup="Dialog"
                 />

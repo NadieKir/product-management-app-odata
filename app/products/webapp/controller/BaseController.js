@@ -122,7 +122,7 @@ sap.ui.define(
       validateRequiredFieldsToBeFilled: function (aControls) {
         const aRequiredControls = aControls.filter((oControl) => {
           try {
-            return oControl.getProperty("required");
+            return oControl.getProperty("required") && oControl.getProperty("enabled");
           } catch {
             return false;
           }

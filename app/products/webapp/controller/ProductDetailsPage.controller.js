@@ -687,26 +687,6 @@ sap.ui.define(
       },
 
       /**
-       * Active message popover title press event handler.
-       *
-       * @param {sap.ui.base.Event} oEvent - Event object.
-       */
-      onActiveMessagePopoverTitlePress: function (oEvent) {
-        const oPressedItem = oEvent.getParameter("item");
-        const oMessageData = oPressedItem.getBindingContext("message").getObject();
-        const oSourceControl = sap.ui.getCore().byId(oMessageData.getControlId());
-
-        if (oSourceControl) {
-          const oPage = this.byId("idProductPage");
-          const oParentSection = findClosestParent(sap.uxap.ObjectPageSubSection, oSourceControl);
-
-          oPage.scrollToSection(oParentSection.getId());
-
-          this.oMessagePopover.close();
-        }
-      },
-
-      /**
        * Create MessagePopover instance.
        */
       createMessagePopover: function () {
@@ -731,6 +711,26 @@ sap.ui.define(
         });
 
         this.byId("idMessagePopoverButton").addDependent(this.oMessagePopover);
+      },
+
+      /**
+       * Active message popover title press event handler.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       */
+      onActiveMessagePopoverTitlePress: function (oEvent) {
+        const oPressedItem = oEvent.getParameter("item");
+        const oMessageData = oPressedItem.getBindingContext("message").getObject();
+        const oSourceControl = sap.ui.getCore().byId(oMessageData.getControlId());
+
+        if (oSourceControl) {
+          const oPage = this.byId("idProductPage");
+          const oParentSection = findClosestParent(sap.uxap.ObjectPageSubSection, oSourceControl);
+
+          oPage.scrollToSection(oParentSection.getId());
+
+          this.oMessagePopover.close();
+        }
       },
     });
   }
