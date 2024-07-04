@@ -84,6 +84,35 @@ sap.ui.define(
       },
 
       /**
+       * Validates Select value not to be empty.
+       *
+       * @param {sap.ui.base.Event} oEvent - Event object.
+       *
+       * @returns {boolean} - Whether Select is valid.
+       */
+      validateRequiredSelect: function (oEvent) {
+        const oSelect = oEvent.getSource();
+        const oSelectedKey = oSelect.getSelectedKey();
+
+        if (oSelectedKey) {
+          oSelect.fireValidationSuccess({
+            element: oSelect,
+            property: "selectedKey",
+          });
+
+          return true;
+        }
+
+        oSelect.fireValidationError({
+          element: oSelect,
+          property: "selectedKey",
+          message: this.getLocalizedString("InputValidation.Required"),
+        });
+
+        return false;
+      },
+
+      /**
        * Validates MultiComboBox value not to be empty.
        *
        * @param {sap.ui.base.Event} oEvent - Event object.
