@@ -571,6 +571,24 @@
 
         <footer>
             <m:Toolbar>
+                <m:Button
+                    id="idMessagePopoverButton"
+                    visible="{= !!${message>/}.length}"
+                    type="{ 
+                        path: 'message>/', 
+                        formatter: '.formatter.messagePopoverButtonTypeFormatter' 
+                    }"
+                    icon="{ 
+                        path: 'message>/',  
+                        formatter: '.formatter.messagePopoverButtonIconFormatter' 
+                    }"
+                    text="{ 
+                        path: 'message>/', 
+                        formatter: '.formatter.highestSeverityMessagesAmountFormatter' 
+                    }"
+                    press="onMessagePopoverButtonPress"
+                    ariaHasPopup="Dialog"
+                />
                 <m:ToolbarSpacer />
                 <m:Button
                     id="idSaveProductButton"

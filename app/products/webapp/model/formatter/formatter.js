@@ -98,6 +98,81 @@ sap.ui.define(
 
         return aSubcategories.join(", ");
       },
+
+      /**
+       * Get message popover button type.
+       *
+       * @param {sap.ui.core.message.Message[]} aMessages - Messages.
+       *
+       * @returns {sap.m.ButtonType} - Message popover button type.
+       */
+      messagePopoverButtonTypeFormatter: function (aMessages) {
+        const sHighestMessageSeverity = helper.getHighestMessageSeverity(aMessages);
+
+        switch (sHighestMessageSeverity) {
+          case "Error":
+            return "Negative";
+          case "Warning":
+            return "Critical";
+          case "Success":
+            return "Success";
+          default:
+            return "Neutral";
+        }
+      },
+
+      /**
+       * Get amount of highest severity messages.
+       *
+       * @param {sap.ui.core.message.Message[]} aMessages - Messages.
+       *
+       * @returns {number} - Amount of highest severity messages.
+       */
+      highestSeverityMessagesAmountFormatter: function (aMessages) {
+        const sHighestMessageSeverity = helper.getHighestMessageSeverity(aMessages);
+
+        const aHighestSeverityMessages = aMessages.filter(
+          (oMessageItem) => oMessageItem.type === sHighestMessageSeverity
+        );
+
+        return aHighestSeverityMessages.length;
+      },
+
+      /**
+       * Get message popover button icon.
+       *
+       * @param {sap.ui.core.message.Message[]} aMessages - Messages.
+       *
+       * @returns {sap.ui.core.URI} - Message popover button icon.
+       */
+      messagePopoverButtonIconFormatter: function (aMessages) {
+        const sHighestMessageSeverity = helper.getHighestMessageSeverity(aMessages);
+
+        switch (sHighestMessageSeverity) {
+          case "Error":
+            return "sap-icon://error";
+          case "Warning":
+            return "sap-icon://alert";
+          case "Success":
+            return "sap-icon://sys-enter-2";
+          default:
+            return "sap-icon://information";
+        }
+      },
+
+      /**
+       * Get message popover group name.
+       *
+       * @param {string[]} aControlsIds - Ids of controls to get group name.
+       *
+       * @returns {string} - Message popover group name.
+       */
+      messagePopoverGroupNameFormatter: function (aControlsIds) {
+        const oControl = sap.ui.getCore().byId(aControlsIds[0]);
+        const oRelatedSection = helper.findClosestParent(sap.uxap.ObjectPageSection, oControl);
+
+        return oRelatedSection?.getProperty("title") || "";
+      },
     };
 
     return formatter;
