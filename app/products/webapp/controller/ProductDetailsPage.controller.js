@@ -731,6 +731,12 @@ sap.ui.define(
 
           oPage.scrollToSection(oParentSection.getId());
 
+          setTimeout(() => {
+            if (oSourceControl.isFocusable()) {
+              oSourceControl.focus();
+            }
+          }, 0);
+
           this.oMessagePopover.close();
         }
       },
